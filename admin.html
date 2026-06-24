@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BG Party Room 內部管理</title>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #1a1a2e; color: #eee; min-height: 100vh; }
+    header { background: #16213e; padding: 20px; text-align: center; border-bottom: 3px solid #e74c3c; }
+    header h1 { color: #e74c3c; font-size: 1.5rem; }
+    header p { font-size: 0.85rem; color: #aaa; margin-top: 4px; }
+    #loginScreen { max-width: 380px; margin: 80px auto; background: #16213e; border-radius: 14px; padding: 36px; box-shadow: 0 6px 24px rgba(0,0,0,0.5); }
+    #loginScreen h2 { text-align: center; margin-bottom: 24px; color: #e74c3c; }
+    #mainScreen { display: none; max-width: 960px; margin: 30px auto; padding: 0 16px; }
+    .card { background: #16213e; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+    .card h2 { font-size: 1rem; margin-bottom: 16px; color: #e74c3c; border-left: 4px solid #e74c3c; padding-left: 10px; }
+    label { display: block; margin-bottom: 6px; font-size: 0.88rem; color: #aaa; }
+    input, select { width: 100%; padding: 10px 12px; border: 1px solid #333; border-radius: 8px; font-size: 0.95rem; margin-bottom: 14px; background: #0f3460; color: white; }
+    input:focus, select:focus { outline: none; border-color: #e74c3c; }
+    .btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 0.9rem; cursor: pointer; font-weight: 600; transition: opacity 0.2s; }
+    .btn:hover { opacity: 0.85; }
+    .btn-red { background: #e74c3c; color: white; width: 100%; padding: 12px; font-size: 1rem; }
+    .btn-green { background: #27ae60; color: white; }
+    .btn-blue { background: #2980b9; color: white; }
+    .btn-orange { background: #e67e22; color: white; }
+    .btn-sm { padding: 6px 14px; font-size: 0.82rem; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .row > * { flex: 1; min-width: 140px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th { background: #0f3460; color: #aaa; padding: 10px 12px; text-align: left; font-weight: 600; }
+    td { padding: 10px 12px; border-bottom: 1px solid #1e2a45; vertical-align: middle; }
+    tr:hover td { background: #1e2a45; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; }
+    .badge-public { background: #2ecc7133; color: #2ecc71; }
+    .badge-internal { background: #e74c3c33; color: #e74c3c; }
+    .badge-upcoming { background: #f39c1233; color: #f39c12; }
+    .badge-past { background: #55555533; color: #888; }
+    .export-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+    .export-row > div { flex: 1; min-width: 160px; }
+    .msg { padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; font-size: 0.88rem; display: none; }
+    .msg.success { background: #27ae6033; color: #2ecc71; display: block; }
+    .msg.error { background: #e74c3c33; color: #e74c3c; display: block; }
+    .loading { text-align: center; color: #777; padding: 20px; }
+    .tag-count { font-size: 0.82rem; color: #aaa; margin-left: 8px; }
+    #logoutBtn { float: right; margin-top: -4px; background: transparent; border: 1px solid #e74c3c; color: #e74c3c; font-size: 0.8rem; padding: 4px 12px; border-radius: 6px; cursor: pointer; }
+
+    .calendar-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .calendar-nav button { background: #0f3460; border: 1px solid #333; border-radius: 6px; padding: 4px 12px; cursor: pointer; font-size: 1rem; color: white; }
+    .calendar-nav span { font-weight: 700; font-size: 1rem; color: #eee; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+    .cal-header { font-size: 0.78rem; font-weight: 700; color: #666; padding: 4px 0; }
+    .cal-day { padding: 8px 4px; border-radius: 8px; font-size: 0.9rem; cursor: default; min-height: 36px; display: flex; align-items: center; justify-content: center; }
+    .cal-day.available { background: #0f346099; color: #5dade2; cursor: pointer; font-weight: 600; border: 1px solid #2980b9; }
+    .cal-day.available:hover { background: #2980b9; color: white; }
+    .cal-day.selected-cal { background: #e74c3c; color: white; font-weight: 700; }
+    .cal-day.past { color: #444; }
+
+    .slot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 8px; }
+    .slot-btn-admin { padding: 10px 6px; border: 2px solid #333; border-radius: 8px; background: #0f3460; color: #eee; font-size: 0.85rem; cursor: pointer; text-align: center; transition: all 0.15s; }
+    .slot-btn-admin:hover:not(.taken) { border-color: #e74c3c; color: #e74c3c; }
+    .slot-btn-admin.selected-slot { border-color: #e74c3c; background: #e74c3c; color: white; font-weight: 700; }
+    .slot-btn-admin.taken { background: #2ecc7122; border-color: #2ecc7155; color: #2ecc71; cursor: not-allowed; font-size: 0.75rem; }
+    .selected-info { background: #0f3460; border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; font-size: 0.9rem; color: #aaa; }
+    .selected-info strong { color: #5dade2; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>🔐 BG Party Room 內部管理系統</h1>
+  <p>僅限當值同事使用</p>
+</header>
+
+<div id="loginScreen">
+  <h2>同事登入</h2>
+  <div id="loginMsg" class="msg"></div>
+  <label>管理密鑰</label>
+  <input type="password" id="adminKey" placeholder="請輸入管理密鑰" onkeydown="if(event.key==='Enter') doLogin()">
+  <button class="btn btn-red" onclick="doLogin()">登入</button>
+</div>
+
+<div id="mainScreen">
+  <!-- 預約列表 -->
+  <div class="card">
+    <h2>
+      📋 所有預約記錄
+      <span id="bookingCount" class="tag-count"></span>
+      <button id="logoutBtn" onclick="doLogout()">登出</button>
+    </h2>
+    <div id="adminMsg" class="msg"></div>
+    <div class="row" style="margin-bottom:14px">
+      <div>
+        <label>篩選日期（留空顯示全部）</label>
+        <input type="date" id="filterDate" onchange="renderTable(allBookings)">
+      </div>
+      <div style="display:flex;align-items:flex-end;padding-bottom:14px">
+        <button class="btn btn-blue" onclick="clearFilter()">清除篩選</button>
+        &nbsp;
+        <button class="btn btn-blue" onclick="loadBookings()">🔄 重新整理</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>狀態</th>
+            <th>日期</th>
+            <th>時間</th>
+            <th>會員號碼</th>
+            <th>來源</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="bookingBody">
+          <tr><td colspan="6" class="loading">載入中...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 內部扣起時段 -->
+  <div class="card">
+    <h2>🔒 內部扣起時段</h2>
+    <div id="internalMsg" class="msg"></div>
+    <div class="row">
+      <div>
+        <div class="calendar-nav">
+          <button onclick="changeInternalMonth(-1)">&#8249;</button>
+          <span id="internalCalTitle"></span>
+          <button onclick="changeInternalMonth(1)">&#8250;</button>
+        </div>
+        <div class="calendar-grid" id="internalCalGrid"></div>
+      </div>
+    </div>
+
+    <div id="internalSlotSection" style="display:none; margin-top:16px">
+      <div id="internalDateInfo" class="selected-info"></div>
+      <div class="row">
+        <div>
+          <label>使用時數</label>
+          <select id="internalDuration" onchange="renderInternalSlots()">
+            <option value="1">1 小時</option>
+            <option value="2" selected>2 小時</option>
+          </select>
+        </div>
+        <div>
+          <label>備註（顯示為會員號碼欄）</label>
+          <input type="text" id="internalNote" placeholder="例：清潔、維修、活動...">
+        </div>
+      </div>
+      <div class="slot-grid" id="internalSlots"></div>
+      <br>
+      <button class="btn btn-orange" id="internalSubmitBtn" onclick="submitInternal()" style="display:none">🔒 確認扣起此時段</button>
+    </div>
+  </div>
+
+  <!-- 匯出 Excel -->
+  <div class="card">
+    <h2>📊 匯出預約記錄</h2>
+    <div class="export-row">
+      <div>
+        <label>開始日期</label>
+        <input type="date" id="exportFrom">
+      </div>
+      <div>
+        <label>結束日期</label>
+        <input type="date" id="exportTo">
+      </div>
+      <div style="padding-bottom:14px">
+        <button class="btn btn-green" onclick="exportExcel()">⬇️ 匯出 Excel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const WORKER_URL = "https://noisy-band-fe3a.lcp51165801.workers.dev";
+  const ADMIN_KEY = "BGIT24148283";
+  const HOURS_BY_DAY = {
+    5: { start: 14, end: 22 },
+    6: { start: 11, end: 22 },
+    0: { start: 11, end: 18 }
+  };
+
+  let allBookings = [];
+  let adminHeaders = { "Content-Type": "application/json", "X-Admin-Key": ADMIN_KEY };
+  let internalYear, internalMonth, internalSelectedDate = null, internalSelectedStart = null;
+
+  // 登入/登出
+  function doLogin() {
+    const key = document.getElementById('adminKey').value.trim();
+    if (key === ADMIN_KEY) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('mainScreen').style.display = 'block';
+      const now = new Date();
+      internalYear = now.getFullYear();
+      internalMonth = now.getMonth();
+      loadBookings();
+      renderInternalCalendar();
+    } else {
+      const msg = document.getElementById('loginMsg');
+      msg.textContent = '密鑰錯誤，請重試。';
+      msg.className = 'msg error';
+    }
+  }
+
+  function doLogout() {
+    document.getElementById('loginScreen').style.display = 'block';
+    document.getElementById('mainScreen').style.display = 'none';
+    document.getElementById('adminKey').value = '';
+  }
+
+  // 載入預約
+  async function loadBookings() {
+    try {
+      const res = await fetch(WORKER_URL, { headers: adminHeaders });
+      const json = await res.json();
+      allBookings = json.data || [];
+      renderTable(allBookings);
+      document.getElementById('bookingCount').textContent = '共 ' + allBookings.length + ' 筆';
+      renderInternalCalendar();
+    } catch (e) {
+      document.getElementById('bookingBody').innerHTML =
+        '<tr><td colspan="6" class="loading">載入失敗，請重新整理。</td></tr>';
+    }
+  }
+
+  function clearFilter() {
+    document.getElementById('filterDate').value = '';
+    renderTable(allBookings);
+  }
+
+  // 顯示預約列表
+  function renderTable(data) {
+    const filterDate = document.getElementById('filterDate').value;
+    const now = new Date();
+    const tbody = document.getElementById('bookingBody');
+
+    let filtered = data;
+    if (filterDate) {
+      filtered = data.filter(b => {
+        const d = new Date(b.startTime);
+        return formatDate(d) === filterDate;
+      });
+    }
+
+    if (filtered.length === 0) {
+      tbody.innerHTML =
+        '<tr><td colspan="6" class="loading">' +
+        (filterDate ? '該日期沒有預約記錄。' : '暫無預約記錄。') +
+        '</td></tr>';
+      return;
+    }
+
+    const sorted = [...filtered].sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+    tbody.innerHTML = sorted.map((b) => {
+      const start = new Date(b.startTime);
+      const end = new Date(b.endTime);
+      const isPast = end < now;
+      const isOngoing = start <= now && end > now;
+
+      const statusBadge = isPast
+        ? '<span class="badge badge-past">已結束</span>'
+        : isOngoing
+          ? '<span class="badge badge-public" style="background:#2980b933;color:#2980b9">進行中</span>'
+          : '<span class="badge badge-upcoming">即將到來</span>';
+
+      const sourceBadge = (b.source === '公眾' || b.source === 'Public')
+        ? '<span class="badge badge-public">公眾</span>'
+        : '<span class="badge badge-internal">內部</span>';
+
+      const dateStr = start.toLocaleDateString('zh-HK', {
+        year:'numeric', month:'2-digit', day:'2-digit', weekday:'short'
+      });
+      const timeStr =
+        start.toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit'}) +
+        ' - ' +
+        end.toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit'});
+
+      return (
+        '<tr>' +
+        '<td>' + statusBadge + '</td>' +
+        '<td>' + dateStr + '</td>' +
+        '<td>' + timeStr + '</td>' +
+        '<td><strong style="color:#f39c12">' +
+          (b.memberId || b.memberid || '—') +
+        '</strong></td>' +
+        '<td>' + sourceBadge + '</td>' +
+        '<td>' +
+          '<button class="btn btn-sm" ' +
+          'style="background:#e74c3c33;color:#e74c3c;border:1px solid #e74c3c44" ' +
+          "onclick=\"deleteBooking('" + b.startTime + "')\">" +
+          '刪除</button>' +
+        '</td>' +
+        '</tr>'
+      );
+    }).join('');
+  }
+
+  // 刪除預約
+  async function deleteBooking(startTime) {
+    if (!confirm('確定要刪除這筆預約嗎？')) return;
+    try {
+      const res = await fetch(
+        WORKER_URL + '?startTime=' + encodeURIComponent(startTime),
+        { method: 'DELETE', headers: adminHeaders }
+      );
+      const result = await res.json();
+      if (result.status === 'success') {
+        showAdminMsg('預約已成功刪除。', 'success');
+        loadBookings();
+      } else {
+        showAdminMsg('刪除失敗，請重試。', 'error');
+      }
+    } catch (e) {
+      showAdminMsg('網絡錯誤，請稍後再試。', 'error');
+    }
+  }
+
+  // 內部日曆
+  function changeInternalMonth(dir) {
+    internalMonth += dir;
+    if (internalMonth > 11) { internalMonth = 0; internalYear++; }
+    if (internalMonth < 0) { internalMonth = 11; internalYear--; }
+    renderInternalCalendar();
+  }
+
+  function renderInternalCalendar() {
+    const months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+    document.getElementById('internalCalTitle').textContent =
+      internalYear + '年 ' + months[internalMonth];
+
+    const grid = document.getElementById('internalCalGrid');
+    grid.innerHTML = '';
+
+    ['日','一','二','三','四','五','六'].forEach(d => {
+      const h = document.createElement('div');
+      h.className = 'cal-header';
+      h.textContent = d;
+      grid.appendChild(h);
+    });
+
+    const firstDay = new Date(internalYear, internalMonth, 1).getDay();
+    const daysInMonth = new Date(internalYear, internalMonth + 1, 0).getDate();
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    for (let i = 0; i < firstDay; i++) {
+      const e = document.createElement('div');
+      e.className = 'cal-day';
+      grid.appendChild(e);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(internalYear, internalMonth, d);
+      const dow = date.getDay();
+      const isAvail = dow === 5 || dow === 6 || dow === 0;
+      const isPast = date < today;
+      const dateStr = formatDate(date);
+      const cell = document.createElement('div');
+      cell.textContent = d;
+      cell.className = 'cal-day';
+
+      if (!isPast && isAvail) {
+        cell.classList.add('available');
+        if (internalSelectedDate === dateStr) cell.classList.add('selected-cal');
+        cell.onclick = () => selectInternalDate(date, dow, dateStr, cell);
+      } else {
+        cell.style.color = '#444';
+      }
+      grid.appendChild(cell);
+    }
+  }
+
+  function selectInternalDate(date, dow, dateStr, clickedCell) {
+    document.querySelectorAll('#internalCalGrid .cal-day.selected-cal')
+      .forEach(c => c.classList.remove('selected-cal'));
+    clickedCell.classList.add('selected-cal');
+    internalSelectedDate = dateStr;
+    internalSelectedStart = null;
+
+    const days = ['日','一','二','三','四','五','六'];
+    const hours = HOURS_BY_DAY[dow];
+    const info = document.getElementById('internalDateInfo');
+    info.innerHTML =
+      '已選擇：<strong>' + dateStr + '（星期' + days[dow] + '）</strong>　' +
+      '可用時段：<strong>' + hours.start + ':00 - ' + hours.end + ':00</strong>';
+
+    document.getElementById('internalSlotSection').style.display = 'block';
+    document.getElementById('internalSubmitBtn').style.display = 'none';
+    renderInternalSlots();
+  }
+
+  function renderInternalSlots() {
+    if (!internalSelectedDate) return;
+
+    const duration = parseInt(document.getElementById('internalDuration').value);
+    const date = new Date(internalSelectedDate);
+    const dow = date.getDay();
+    const hours = HOURS_BY_DAY[dow];
+    const container = document.getElementById('internalSlots');
+    container.innerHTML = '';
+    internalSelectedStart = null;
+    document.getElementById('internalSubmitBtn').style.display = 'none';
+
+    const dayBooked = [];
+    allBookings.forEach(b => {
+      const bd = new Date(b.startTime);
+      if (formatDate(bd) === internalSelectedDate) {
+        dayBooked.push({ start: bd.getHours(), end: new Date(b.endTime).getHours() });
+      }
+    });
+
+    for (let h = hours.start; h <= hours.end - duration; h++) {
+      const endH = h + duration;
+      const taken = dayBooked.some(b => h < b.end && endH > b.start);
+      const btn = document.createElement('button');
+      btn.className = 'slot-btn-admin' + (taken ? ' taken' : '');
+      btn.innerHTML = h + ':00<br><small>-' + endH + ':00</small>';
+
+      if (taken) {
+        btn.innerHTML += '<br><small>已預約</small>';
+      } else {
+        btn.onclick = () => selectInternalSlot(btn, h, endH);
+      }
+      container.appendChild(btn);
+    }
+  }
+
+  function selectInternalSlot(btn, startH, endH) {
+    document.querySelectorAll('.slot-btn-admin.selected-slot')
+      .forEach(b => b.classList.remove('selected-slot'));
+    btn.classList.add('selected-slot');
+    internalSelectedStart = startH;
+    document.getElementById('internalSubmitBtn').style.display = 'block';
+    document.getElementById('internalSubmitBtn').textContent =
+      '🔒 確認扣起 ' + internalSelectedDate + ' ' + startH + ':00-' + endH + ':00';
+  }
+
+  // 內部扣起提交
+  async function submitInternal() {
+    if (!internalSelectedDate || internalSelectedStart === null) {
+      showInternalMsg('請先選擇日期及時段。', 'error');
+      return;
+    }
+
+    const duration = parseInt(document.getElementById('internalDuration').value);
+    const note = document.getElementById('internalNote').value.trim() || '內部';
+    const startTime = new Date(
+      internalSelectedDate + 'T' +
+      String(internalSelectedStart).padStart(2,'0') +
+      ':00:00'
+    );
+    const endTime = new Date(startTime.getTime() + duration * 3600000);
+
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: adminHeaders,
+        body: JSON.stringify({
+          memberId: note,
+          startTime: startTime.toISOString(),
+          endTime: endTime.toISOString(),
+          source: '內部'
+        })
+      });
+      const result = await res.json();
+      if (result.status === 'success') {
+        showInternalMsg('時段已成功扣起！', 'success');
+        document.getElementById('internalNote').value = '';
+        document.getElementById('internalSubmitBtn').style.display = 'none';
+        internalSelectedStart = null;
+        loadBookings();
+      } else {
+        showInternalMsg('提交失敗，請重試。', 'error');
+      }
+    } catch (e) {
+      showInternalMsg('網絡錯誤，請稍後再試。', 'error');
+    }
+  }
+
+  // 匯出 Excel
+  function exportExcel() {
+    const from = document.getElementById('exportFrom').value;
+    const to = document.getElementById('exportTo').value;
+    if (!from || !to) {
+      showAdminMsg('請選擇開始及結束日期。', 'error');
+      return;
+    }
+
+    const fromDate = new Date(from);
+    const toDate = new Date(to + 'T23:59:59');
+    const filtered = allBookings.filter(b => {
+      const t = new Date(b.startTime);
+      return t >= fromDate && t <= toDate;
+    });
+
+    if (filtered.length === 0) {
+      showAdminMsg('所選日期範圍內沒有預約記錄。', 'error');
+      return;
+    }
+
+    const exportData = filtered.map(b => ({
+      '預約日期': new Date(b.startTime).toLocaleDateString('zh-HK'),
+      '開始時間': new Date(b.startTime).toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit'}),
+      '結束時間': new Date(b.endTime).toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit'}),
+      '會員號碼': b.memberId || b.memberid || '',
+      '來源': b.source || ''
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, '預約記錄');
+    XLSX.writeFile(workbook, 'PartyRoom_預約紀錄_' + from + '_至_' + to + '.xlsx');
+  }
+
+  function showAdminMsg(text, type) {
+    const msg = document.getElementById('adminMsg');
+    msg.textContent = text;
+    msg.className = 'msg ' + type;
+    setTimeout(() => { msg.className = 'msg'; }, 4000);
+  }
+
+  function showInternalMsg(text, type) {
+    const msg = document.getElementById('internalMsg');
+    msg.textContent = text;
+    msg.className = 'msg ' + type;
+    setTimeout(() => { msg.className = 'msg'; }, 4000);
+  }
+
+  function formatDate(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + d;
+  }
+</script>
+</body>
+</html>

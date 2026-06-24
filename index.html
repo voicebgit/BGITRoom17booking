@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BG Party Room 預約</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #333; }
+    header { background: #2c3e50; color: white; padding: 20px 60px 20px 20px; text-align: center; position: relative; }
+    header h1 { font-size: 1.6rem; }
+    header p { font-size: 0.9rem; opacity: 0.8; margin-top: 4px; }
+    .lang-btn { position: absolute; top: 14px; right: 14px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.5); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 0.82rem; font-weight: 600; }
+    .lang-btn:hover { background: rgba(255,255,255,0.35); }
+    .container { max-width: 720px; margin: 30px auto; padding: 0 16px; }
+    .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .card h2 { font-size: 1.1rem; margin-bottom: 16px; color: #2c3e50; border-left: 4px solid #3498db; padding-left: 10px; }
+
+    /* 日曆 */
+    .calendar-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .calendar-nav button { background: none; border: 1px solid #ddd; border-radius: 6px; padding: 4px 12px; cursor: pointer; font-size: 1rem; }
+    .calendar-nav span { font-weight: 700; font-size: 1rem; color: #2c3e50; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+    .cal-header { font-size: 0.78rem; font-weight: 700; color: #888; padding: 4px 0; }
+    .cal-day { padding: 8px 4px; border-radius: 8px; font-size: 0.9rem; cursor: default; min-height: 36px; display: flex; align-items: center; justify-content: center; }
+    .cal-day.available { background: #eaf4fb; color: #2980b9; cursor: pointer; font-weight: 600; }
+    .cal-day.available:hover { background: #3498db; color: white; }
+    .cal-day.selected { background: #3498db; color: white; font-weight: 700; }
+    .cal-day.booked { background: #fdecea; color: #e74c3c; cursor: default; }
+    .cal-day.past { color: #ccc; }
+    .cal-day.empty { }
+    .cal-legend { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: #666; }
+    .legend-dot { width: 14px; height: 14px; border-radius: 4px; }
+
+    /* 時段 */
+    .time-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 8px; }
+    .slot-btn { padding: 10px 6px; border: 2px solid #ddd; border-radius: 8px; background: white; font-size: 0.85rem; cursor: pointer; text-align: center; transition: all 0.15s; }
+    .slot-btn:hover:not(.disabled) { border-color: #3498db; color: #3498db; }
+    .slot-btn.selected { border-color: #3498db; background: #3498db; color: white; font-weight: 700; }
+    .slot-btn.disabled { background: #fdecea; border-color: #f5c6c6; color: #e74c3c; cursor: not-allowed; font-size: 0.75rem; }
+
+    /* 表單 */
+    label { display: block; margin-bottom: 6px; font-size: 0.9rem; font-weight: 600; color: #555; }
+    input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; margin-bottom: 16px; }
+    input:focus { outline: none; border-color: #3498db; }
+    select { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; margin-bottom: 16px; background: white; }
+    .btn { width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; font-weight: 600; }
+    .btn:hover:not(:disabled) { background: #2980b9; }
+    .btn:disabled { background: #aaa; cursor: not-allowed; }
+    .msg { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 0.9rem; display: none; }
+    .msg.success { background: #d4edda; color: #155724; display: block; }
+    .msg.error { background: #f8d7da; color: #721c24; display: block; }
+    .loading { text-align: center; color: #888; font-size: 0.9rem; padding: 12px; }
+    .selected-info { background: #eaf4fb; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 0.9rem; color: #2c3e50; display: none; }
+    .selected-info strong { color: #2980b9; }
+    .no-slot { text-align: center; color: #888; padding: 16px; font-size: 0.9rem; }
+
+    /* 全屏須知彈窗 */
+    .rules-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #1a252f;
+      z-index: 9999;
+      overflow-y: auto;
+    }
+    .rules-overlay.active { display: block; animation: fadeSlideIn 0.35s ease; }
+    @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .rules-inner { max-width: 640px; margin: 0 auto; padding: 32px 20px 48px; }
+    .rules-success-badge {
+      background: linear-gradient(135deg, #27ae60, #2ecc71);
+      color: white; border-radius: 12px; padding: 16px 20px;
+      font-size: 1.2rem; font-weight: 700; text-align: center;
+      margin-bottom: 20px; box-shadow: 0 4px 16px rgba(39,174,96,0.4);
+    }
+    .rules-booking-info {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px; padding: 14px 18px; margin-bottom: 24px;
+      color: #ecf0f1; font-size: 0.95rem; line-height: 1.9;
+    }
+    .rules-booking-info strong { color: #3498db; }
+    .rules-section-title {
+      color: #e74c3c; font-size: 1.05rem; font-weight: 700;
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+    .rules-list { list-style: none; padding: 0; margin-bottom: 32px; }
+    .rules-list li {
+      display: flex; gap: 12px; padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .rule-num {
+      background: #e74c3c; color: white; border-radius: 50%;
+      width: 24px; height: 24px; min-width: 24px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700; margin-top: 2px;
+    }
+    .rule-zh { color: #ecf0f1; font-size: 0.95rem; line-height: 1.6; }
+    .rule-en { color: #7f8c8d; font-size: 0.82rem; margin-top: 3px; line-height: 1.5; }
+    .rules-back-btn {
+      width: 100%; padding: 16px; background: #3498db; color: white;
+      border: none; border-radius: 10px; font-size: 1.05rem;
+      cursor: pointer; font-weight: 700; transition: background 0.2s;
+      box-shadow: 0 4px 12px rgba(52,152,219,0.4);
+    }
+    .rules-back-btn:hover { background: #2980b9; }
+  </style>
+</head>
+<body>
+
+<!-- ===== 全屏須知彈窗 ===== -->
+<div class="rules-overlay" id="rulesOverlay">
+  <div class="rules-inner">
+    <div class="rules-success-badge" id="overlayBadge">✅ 預約成功！Booking Confirmed!</div>
+    <div class="rules-booking-info" id="overlayBookingInfo">－</div>
+    <div class="rules-section-title">⚠️ 房間使用須知 Room Rules</div>
+    <ul class="rules-list">
+      >
+        <span class="rule-num">1</span>
+        <div><div class="rule-zh">請於預約時間前 5 分鐘到達，向當值同事出示會員證核對號碼。</div>
+        <div class="rule-en">Please arrive 5 minutes early and show your membership card to staff for verification.</div></div>
+      </li>
+      >
+        <span class="rule-num">2</span>
+        <div><div class="rule-zh">使用後請保持房間整潔，垃圾自行帶走。</div>
+        <div class="rule-en">Please keep the room tidy and take all rubbish with you after use.</div></div>
+      </li>
+      >
+        <span class="rule-num">3</span>
+        <div><div class="rule-zh">嚴禁在房間內進食外賣或飲用酒精飲品。</div>
+        <div class="rule-en">Takeaway food and alcoholic beverages are strictly prohibited inside the room.</div></div>
+      </li>
+      >
+        <span class="rule-num">4</span>
+        <div><div class="rule-zh">音量請控制在合理範圍，以免影響其他使用者。</div>
+        <div class="rule-en">Please keep noise to a reasonable level so as not to disturb other users.</div></div>
+      </li>
+      >
+        <span class="rule-num">5</span>
+        <div><div class="rule-zh">如需取消預約，請提前 24 小時通知同事。</div>
+        <div class="rule-en">To cancel your booking, please notify staff at least 24 hours in advance.</div></div>
+      </li>
+    </ul>
+    <button class="rules-back-btn" onclick="closeRules()" id="backBtn">🔄 返回重新預約 / Back to Booking</button>
+  </div>
+</div>
+
+<!-- ===== 頁頭 ===== -->
+<header>
+  <button class="lang-btn" id="langBtn" onclick="toggleLang()">English</button>
+  <h1>🎉 <span id="h-title">BG Party Room 預約系統</span></h1>
+  <p id="h-sub">只限星期五 14:00-22:00 ｜ 星期六 11:00-22:00 ｜ 星期日 11:00-18:00</p>
+</header>
+
+<div class="container">
+
+  <!-- 日曆 -->
+  <div class="card">
+    <h2>📅 <span id="t-calTitle">選擇預約日期</span></h2>
+    <div class="calendar-nav">
+      <button onclick="changeMonth(-1)">‹</button>
+      <span id="calTitle"></span>
+      <button onclick="changeMonth(1)">›</button>
+    </div>
+    <div class="calendar-grid" id="calGrid"></div>
+    <div class="cal-legend">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#eaf4fb;border:1px solid #3498db;"></div>
+        <span id="leg-avail">可預約</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#3498db;"></div>
+        <span id="leg-sel">已選擇</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#fdecea;border:1px solid #e74c3c;"></div>
+        <span id="leg-full">已完全預約</span>
+      </div>
+             <div class="legend-item">
+          <div class="legend-dot" style="background:#f0f0f0;border:1px solid #ccc;"></div>
+          <span id="leg-na">不可預約</span>
+        </div>
+      </div>
+  </div>
+
+  <!-- 時段選擇 -->
+  <div class="card" id="slotCard" style="display:none;">
+    <h2>🕐 <span id="t-slotTitle">選擇時段</span></h2>
+    <div class="selected-info" id="selectedDateInfo"></div>
+    <div>
+      <label id="t-durLabel">使用時數</label>
+      <select id="duration" onchange="renderSlots()">
+        <option value="1" selected>1 小時 / 1 Hour</option>
+        <option value="2">2 小時 / 2 Hours</option>
+      </select>
+    </div>
+    <div class="time-slots" id="timeSlots"></div>
+  </div>
+
+  <!-- 預約表單 -->
+  <div class="card" id="formCard" style="display:none;">
+    <h2>📝 <span id="t-formTitle">填寫預約資料</span></h2>
+    <div id="bookingSummary" class="selected-info" style="display:block;margin-bottom:16px;"></div>
+    <div id="msg" class="msg"></div>
+    <label for="memberId" id="t-memberLabel">會員號碼 *</label>
+    <input type="text" id="memberId" placeholder="請輸入你的會員號碼 / Enter your member ID" maxlength="20">
+    <button class="btn" id="submitBtn" onclick="submitBooking()" id="t-submitBtn">確認預約 / Confirm Booking</button>
+  </div>
+
+</div><!-- end container -->
+
+<script>
+  const WORKER_URL = "https://noisy-band-fe3a.lcp51165801.workers.dev";
+  const MAX_BOOKINGS = 3;    // 每會員最多未來預約次數
+  const MAX_HOURS = 6;       // 每會員最多未來預約合共小時數
+
+  const HOURS_BY_DAY = {
+    5: { start: 14, end: 22 },
+    6: { start: 11, end: 22 },
+    0: { start: 11, end: 18 }
+  };
+
+  let currentYear, currentMonth;
+  let bookedSlots = [];
+  let selectedDate = null;
+  let selectedStart = null;
+  let lang = 'zh';
+
+  // ── 語言字串 ──────────────────────────────────────
+  const T = {
+    zh: {
+      langBtn: 'English',
+      hTitle: 'Party Room 預約系統',
+      hSub: '只限星期五 14:00-22:00 ｜ 星期六 11:00-22:00 ｜ 星期日 11:00-18:00',
+      calTitle: '選擇預約日期',
+      legAvail: '可預約', legSel: '已選擇', legFull: '已完全預約', legNa: '不可預約',
+      slotTitle: '選擇時段',
+      durLabel: '使用時數',
+      formTitle: '填寫預約資料',
+      memberLabel: '會員號碼 *',
+      memberPh: '請輸入你的會員號碼',
+      submitBtn: '確認預約',
+      submitting: '提交中...',
+      booked: '已預約',
+      errMember: '請填寫會員號碼。',
+      errSelect: '請先選擇日期及時段。',
+      errLimit: `抱歉，每位會員最多只可預約 ${MAX_BOOKINGS} 次（合共 ${MAX_HOURS} 小時）未來時段，你已達上限。`,
+      errFail: '預約失敗，請稍後再試。',
+      errNet: '網絡錯誤，請稍後再試。',
+      overlayBadge: '✅ 預約成功！',
+      backBtn: '🔄 返回重新預約',
+      dayNames: ['日','一','二','三','四','五','六'],
+      months: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+      selectedLabel: '已選擇：',
+      availSlot: '可用時段：',
+      dateLabel: '📅 預約日期：',
+      timeLabel: '⏰ 時間：',
+      noSlot: '此日所有時段已被預約 😔',
+      calWeekdays: ['日','一','二','三','四','五','六']
+    },
+    en: {
+      langBtn: '中文',
+      hTitle: 'Party Room Booking',
+      hSub: 'Fri 14:00-22:00 ｜ Sat 11:00-22:00 ｜ Sun 11:00-18:00',
+      calTitle: 'Select Date',
+      legAvail: 'Available', legSel: 'Selected', legFull: 'Fully Booked', legNa: 'Unavailable',
+      slotTitle: 'Select Time Slot',
+      durLabel: 'Duration',
+      formTitle: 'Booking Details',
+      memberLabel: 'Member ID *',
+      memberPh: 'Enter your member ID',
+      submitBtn: 'Confirm Booking',
+      submitting: 'Submitting...',
+      booked: 'Booked',
+      errMember: 'Please enter your member ID.',
+      errSelect: 'Please select a date and time slot first.',
+      errLimit: `Sorry, each member may book a maximum of ${MAX_BOOKINGS} future sessions (up to ${MAX_HOURS} hours total). You have reached the limit.`,
+      errFail: 'Booking failed. Please try again later.',
+      errNet: 'Network error. Please try again later.',
+      overlayBadge: '✅ Booking Confirmed!',
+      backBtn: '🔄 Back to Booking',
+      dayNames: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+      months: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      selectedLabel: 'Selected: ',
+      availSlot: 'Available: ',
+      dateLabel: '📅 Date: ',
+      timeLabel: '⏰ Time: ',
+      noSlot: 'All slots on this day are fully booked 😔',
+      calWeekdays: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+    }
+  };
+
+  // ── 語言切換 ──────────────────────────────────────
+  function toggleLang() {
+    lang = lang === 'zh' ? 'en' : 'zh';
+    applyLang();
+  }
+
+  function applyLang() {
+    const t = T[lang];
+    document.getElementById('langBtn').textContent = t.langBtn;
+    document.getElementById('h-title').textContent = t.hTitle;
+    document.getElementById('h-sub').textContent = t.hSub;
+    document.getElementById('t-calTitle').textContent = t.calTitle;
+    document.getElementById('leg-avail').textContent = t.legAvail;
+    document.getElementById('leg-sel').textContent = t.legSel;
+    document.getElementById('leg-full').textContent = t.legFull;
+    document.getElementById('leg-na').textContent = t.legNa;
+    document.getElementById('t-slotTitle').textContent = t.slotTitle;
+    document.getElementById('t-durLabel').textContent = t.durLabel;
+    document.getElementById('t-formTitle').textContent = t.formTitle;
+    document.getElementById('t-memberLabel').textContent = t.memberLabel;
+    document.getElementById('memberId').placeholder = t.memberPh;
+    document.getElementById('submitBtn').textContent = t.submitBtn;
+    document.getElementById('backBtn').textContent = t.backBtn;
+    renderCalendar();
+    if (selectedDate) renderSlots();
+  }
+
+  // ── 初始化 ────────────────────────────────────────
+  const now = new Date();
+  currentYear = now.getFullYear();
+  currentMonth = now.getMonth();
+  loadBookings();
+
+  async function loadBookings() {
+    try {
+      const res = await fetch(WORKER_URL);
+      const json = await res.json();
+      bookedSlots = (json.data || []).map(b => ({
+        memberId: b.memberId || '',
+        start: new Date(b.startTime),
+        end: new Date(b.endTime)
+      }));
+      renderCalendar();
+    } catch(e) {
+      renderCalendar();
+    }
+  }
+
+  // ── 月份導航 ──────────────────────────────────────
+  function changeMonth(dir) {
+    currentMonth += dir;
+    if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+    if (currentMonth < 0)  { currentMonth = 11; currentYear--; }
+    renderCalendar();
+  }
+
+  // ── 日曆渲染 ──────────────────────────────────────
+  function renderCalendar() {
+    const t = T[lang];
+    document.getElementById('calTitle').textContent =
+      lang === 'zh'
+        ? currentYear + '年 ' + t.months[currentMonth]
+        : t.months[currentMonth] + ' ' + currentYear;
+
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
+
+    t.calWeekdays.forEach(d => {
+      const h = document.createElement('div');
+      h.className = 'cal-header';
+      h.textContent = d;
+      grid.appendChild(h);
+    });
+
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement('div');
+      empty.className = 'cal-day empty';
+      grid.appendChild(empty);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(currentYear, currentMonth, d);
+      const dow = date.getDay();
+      const isAvailableDay = dow === 5 || dow === 6 || dow === 0;
+      const isPast = date < today;
+      const dateStr = formatDate(date);
+      const cell = document.createElement('div');
+      cell.textContent = d;
+      cell.className = 'cal-day';
+
+      if (isPast || !isAvailableDay) {
+        cell.classList.add('past');
+        cell.style.color = '#ccc';
+      } else {
+        if (isFullyBooked(date, dow)) {
+          cell.classList.add('booked');
+          cell.title = lang === 'zh' ? '此日時段已全部被預約' : 'Fully booked';
+        } else {
+          cell.classList.add('available');
+          if (selectedDate === dateStr) cell.classList.add('selected');
+          cell.onclick = () => selectDate(date, dow, dateStr, cell);
+        }
+      }
+      grid.appendChild(cell);
+    }
+  }
+
+  function isFullyBooked(date, dow) {
+    const hours = HOURS_BY_DAY[dow];
+    const totalSlots = hours.end - hours.start;
+    let bookedHours = new Set();
+    bookedSlots.forEach(b => {
+      const bd = b.start;
+      if (bd.getFullYear() === date.getFullYear() &&
+          bd.getMonth()    === date.getMonth() &&
+          bd.getDate()     === date.getDate()) {
+        for (let h = b.start.getHours(); h < b.end.getHours(); h++) bookedHours.add(h);
+      }
+    });
+    return bookedHours.size >= totalSlots;
+  }
+
+  // ── 選擇日期 ──────────────────────────────────────
+  function selectDate(date, dow, dateStr, clickedCell) {
+    document.querySelectorAll('.cal-day.selected').forEach(c => c.classList.remove('selected'));
+    clickedCell.classList.add('selected');
+    selectedDate = dateStr;
+    selectedStart = null;
+
+    const t = T[lang];
+    const hours = HOURS_BY_DAY[dow];
+    const info = document.getElementById('selectedDateInfo');
+    info.innerHTML = t.selectedLabel +
+      '<strong>' + dateStr + '（' + (lang === 'zh' ? '星期' : '') + t.dayNames[dow] + '）</strong>　' +
+      t.availSlot + '<strong>' + hours.start + ':00 - ' + hours.end + ':00</strong>';
+    info.style.display = 'block';
+
+    document.getElementById('slotCard').style.display = 'block';
+    document.getElementById('formCard').style.display = 'none';
+    renderSlots();
+    document.getElementById('slotCard').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // ── 時段渲染 ──────────────────────────────────────
+ // ── 時段渲染 ──────────────────────────────────────
+function renderSlots() {
+  if (!selectedDate) return;
+  const t = T[lang];
+  const duration = parseInt(document.getElementById('duration').value);
+  const date = new Date(selectedDate + 'T12:00:00');
+  const dow = date.getDay();
+  const hours = HOURS_BY_DAY[dow];
+  const container = document.getElementById('timeSlots');
+  container.innerHTML = '';
+  selectedStart = null;
+  document.getElementById('formCard').style.display = 'none';
+
+  const dayBooked = [];
+  bookedSlots.forEach(b => {
+    if (formatDate(b.start) === selectedDate) {
+      dayBooked.push({ start: b.start.getHours(), end: b.end.getHours() });
+    }
+  });
+
+  const now = new Date();
+  let hasSlot = false;
+
+  for (let h = hours.start; h <= hours.end - duration; h++) {
+    const endH = h + duration;
+
+    // 是否與其他 booking 衝突
+    const conflict = dayBooked.some(b => h < b.end && endH > b.start);
+
+    // 是否已經過去的時段（同一天而且開始時間早於現在）
+    const slotStart = new Date(
+      selectedDate + 'T' + String(h).padStart(2,'0') + ':00:00'
+    );
+    const isPastSlot = slotStart < now;
+
+    const disabled = conflict || isPastSlot;
+
+    const btn = document.createElement('button');
+    btn.className = 'slot-btn' + (disabled ? ' disabled' : '');
+    btn.innerHTML = h + ':00<br><small>-' + endH + ':00</small>';
+
+    if (conflict) {
+      btn.innerHTML += '<br><small>' + T[lang].booked + '</small>';
+    } else if (isPastSlot) {
+      btn.innerHTML += '<br><small>' + (lang === 'zh' ? '已過去' : 'Past') + '</small>';
+    } else {
+      hasSlot = true;
+      btn.onclick = () => selectSlot(btn, h, endH);
+    }
+
+    container.appendChild(btn);
+  }
+
+  if (!hasSlot) {
+    container.innerHTML = '<div class="no-slot">' + t.noSlot + '</div>';
+  }
+}
+
+  // ── 選擇時段 ──────────────────────────────────────
+  function selectSlot(btn, startH, endH) {
+    document.querySelectorAll('.slot-btn.selected').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedStart = startH;
+    const t = T[lang];
+    const summary = document.getElementById('bookingSummary');
+    summary.innerHTML = t.dateLabel + '<strong>' + selectedDate + '</strong>&nbsp;&nbsp;' +
+      t.timeLabel + '<strong>' + startH + ':00 - ' + endH + ':00</strong>';
+    document.getElementById('formCard').style.display = 'block';
+    document.getElementById('msg').className = 'msg';
+    document.getElementById('memberId').value = '';
+    document.getElementById('submitBtn').textContent = T[lang].submitBtn;
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('formCard').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // ── 會員預約限制檢查 ──────────────────────────────
+function checkMemberLimit(memberId) {
+  const now = new Date();
+  const targetId = (memberId || '').toString().trim().toLowerCase();
+
+  const memberFuture = bookedSlots.filter(b => {
+    const bid = (b.memberId || '').toString().trim().toLowerCase();
+    return bid && bid === targetId && b.start >= now;
+  });
+
+  const count = memberFuture.length;
+  const totalHours = memberFuture.reduce((sum, b) => {
+    return sum + (b.end - b.start) / 3600000;
+  }, 0);
+
+  return { count, totalHours };
+}
+
+  // ── 提交預約 ──────────────────────────────────────
+async function submitBooking() {
+  const t = T[lang];
+  const memberId = document.getElementById('memberId').value.trim();
+  if (!memberId) { showMsg(t.errMember, 'error'); return; }
+  if (!selectedDate || selectedStart === null) { showMsg(t.errSelect, 'error'); return; }
+
+  const duration = parseInt(document.getElementById('duration').value);
+
+  // 會員上限檢查（最多3次 / 合共6小時）
+  const { count, totalHours } = checkMemberLimit(memberId);
+  if (count >= MAX_BOOKINGS || totalHours + duration > MAX_HOURS) {
+    showMsg(t.errLimit, 'error');
+    return;
+  }
+
+  const startTime = new Date(
+    selectedDate + 'T' + String(selectedStart).padStart(2,'0') + ':00:00'
+  );
+  const endTime = new Date(startTime.getTime() + duration * 3600000);
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = t.submitting;
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        memberId,
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString(),
+        source: '公眾'
+      })
+    });
+
+    const result = await res.json();
+
+    if (result.status === 'success') {
+      // 更新全屏彈窗內容
+      document.getElementById('overlayBadge').textContent = t.overlayBadge;
+      document.getElementById('overlayBookingInfo').innerHTML =
+        t.dateLabel + '<strong>' + selectedDate + '</strong><br>' +
+        t.timeLabel + '<strong>' + selectedStart + ':00 - ' +
+        (selectedStart + duration) + ':00</strong><br>' +
+        (lang === 'zh' ? '會員號碼：' : 'Member ID: ') +
+        '<strong>' + memberId + '</strong>';
+      document.getElementById('backBtn').textContent = t.backBtn;
+
+      // 顯示全屏須知
+      const overlay = document.getElementById('rulesOverlay');
+      overlay.classList.add('active');
+      overlay.scrollTop = 0;
+
+      // 重新載入預約資料（更新已被佔用的時段）
+      await loadBookings();
+    } else {
+      // 根據後端 message 分類錯誤
+      let msgText;
+      if (result.message === 'Time slot already booked') {
+        msgText = (lang === 'zh')
+          ? '抱歉，該時段剛剛已被其他會員預約，請選擇其他時段。'
+          : 'Sorry, this time slot has just been booked by another member. Please choose another slot.';
+      } else {
+        msgText = t.errFail;
+      }
+      showMsg(msgText, 'error');
+      btn.disabled = false;
+      btn.textContent = t.submitBtn;
+    }
+  } catch (e) {
+    showMsg(t.errNet, 'error');
+    btn.disabled = false;
+    btn.textContent = t.submitBtn;
+  }
+}
+  // ── 關閉須知彈窗，返回日曆 ────────────────────────
+  function closeRules() {
+    document.getElementById('rulesOverlay').classList.remove('active');
+    selectedDate = null;
+    selectedStart = null;
+    document.getElementById('slotCard').style.display = 'none';
+    document.getElementById('formCard').style.display = 'none';
+    document.getElementById('selectedDateInfo').style.display = 'none';
+    document.getElementById('msg').className = 'msg';
+    document.querySelectorAll('.cal-day.selected').forEach(c => c.classList.remove('selected'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── 工具函式 ──────────────────────────────────────
+  function showMsg(text, type) {
+    const msg = document.getElementById('msg');
+    msg.textContent = text;
+    msg.className = 'msg ' + type;
+  }
+
+  function formatDate(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + d;
+  }
+
+</script>
+</body>
+</html>
