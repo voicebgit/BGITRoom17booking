@@ -143,74 +143,72 @@
 
 <!-- ===== 全屏須知彈窗 ===== -->
 <div id="rulesOverlay" class="rules-overlay">
-  <div class="rules-content">
-    <h2 style="text-align:center; font-size:1.3rem; margin-bottom:4px;">🎉 BGIT Party Room</h2>
-    <h3 style="text-align:center; font-size:1rem; margin-bottom:8px; color:#e74c3c;">使用須知 Room Rules</h3>
-    <p style="text-align:center; font-size:0.78rem; background:#fff3cd; padding:8px; border-radius:8px; margin-bottom:16px;">
-      📸 截圖本頁面連同會員證向櫃台同事出示核對<br>
-      <em>Screenshot this page & show membership card to counter staff</em>
-    </p>
+  <div class="rules-inner">
+
+    <div class="rules-success-badge" id="overlayBadge">✅ 預約成功！</div>
+
+    <div class="rules-booking-info" id="overlayBookingInfo"></div>
+
+    <h2 style="text-align:center; color:white; font-size:1.1rem; margin-bottom:4px;">🎉 BGIT Party Room</h2>
+    <h3 style="text-align:center; color:#e74c3c; font-size:0.95rem; margin-bottom:12px;">使用須知 Room Rules</h3>
+
+    <div class="rules-screenshot-tip">
+      📸 請截圖本頁面，連同會員證向櫃台當值同事出示以作核對<br>
+      <em>Screenshot this page & present with your membership card to counter staff for verification</em>
+    </div>
 
     <div class="rule-item">
       <span class="rule-icon">👟</span>
       <div><strong>1.</strong> 入場前除鞋 · 預約時間前5分鐘到達出示會員證 · 取消請提前24小時通知<br>
       <em>Remove shoes upon entry · Arrive 5 mins early with membership card · Cancel 24hrs in advance</em></div>
     </div>
-
     <div class="rule-item">
       <span class="rule-icon">🚬</span>
       <div><strong>2.</strong> 室內全面禁煙<br>
       <em>No smoking inside the room</em></div>
     </div>
-
     <div class="rule-item">
       <span class="rule-icon">💝</span>
       <div><strong>3.</strong> 請愛惜所有設備及設施<br>
       <em>Handle all equipment with care</em></div>
     </div>
-
     <div class="rule-item">
       <span class="rule-icon">🗑️</span>
       <div><strong>4.</strong> 離場時帶走垃圾放門外垃圾桶，設施還原<br>
       <em>Dispose rubbish outside & restore all facilities before leaving</em></div>
     </div>
-
     <div class="rule-item">
       <span class="rule-icon">🍱</span>
       <div><strong>5.</strong> 可自備食物，禁榴槤等濃味食物 · 地氈區禁飲食 · 禁酒精飲品<br>
       <em>Outside food OK, no strong-smelling food · No food/drink on carpet · No alcohol</em></div>
     </div>
-
     <div class="rule-item">
       <span class="rule-icon">💡</span>
       <div><strong>6.</strong> 離場前關掉所有電源（燈·冷氣·電視·電器）<br>
       <em>Switch off all power before leaving (lights, AC, TV, appliances)</em></div>
     </div>
-
     <div class="rule-item">
       <span class="rule-icon">⚖️</span>
       <div><strong>7.</strong> 嚴禁非法及商業活動<br>
       <em>No illegal or commercial activities</em></div>
     </div>
-
     <div class="rule-item">
       <span class="rule-icon">📋</span>
       <div><strong>8.</strong> 違規須進行中心服務令，詳情向工作員了解 😅<br>
       <em>Violations may result in centre service order 😅</em></div>
     </div>
-
     <div class="rule-item">
       <span class="rule-icon">❓</span>
       <div><strong>9.</strong> 如有疑問請向當值職員查詢<br>
       <em>For enquiries, please approach on-duty staff</em></div>
     </div>
 
-    <button onclick="closeRules()" class="btn-primary" style="width:100%; margin-top:16px;">
-      ✅ 我已閱讀並同意 · I have read and agree
+    <button id="backBtn" onclick="closeRules()" class="rules-back-btn">
+      🔄 返回重新預約 · Back to Booking
     </button>
+
   </div>
 </div>
-
 <!-- ===== 頁頭 ===== -->
 <header>
   <button class="lang-btn" id="langBtn" onclick="toggleLang()">English</button>
