@@ -533,10 +533,14 @@ function renderSlots() {
     const conflict = dayBooked.some(b => h < b.end && endH > b.start);
 
     // 是否已經過去的時段（同一天而且開始時間早於現在）
-    const slotStart = new Date(
-      selectedDate + 'T' + String(h).padStart(2,'0') + ':00:00'
-    );
-    const isPastSlot = slotStart < now;
+const nowHKT = new Date(now.getTime() + 8 * 3600000);
+const slotDateHKT = new Date(Date.UTC(
+  parseInt(selectedDate.slice(0,4)),
+  parseInt(selectedDate.slice(5,7)) - 1,
+  parseInt(selectedDate.slice(8,10)),
+  h - 8
+));
+const isPastSlot = slotDateHKT < now;
 
     const disabled = conflict || isPastSlot;
 
@@ -612,10 +616,17 @@ async function submitBooking() {
     return;
   }
 
-  const startTime = new Date(
-    selectedDate + 'T' + String(selectedStart).padStart(2,'0') + ':00:00'
-  );
-  const endTime = new Date(startTime.getTime() + duration * 3600000);
+// 強制用香港時間 UTC+8 計算
+const offsetMs = 8 * 60 * 60 * 1000;
+const startTime = new Date(
+  Date.UTC(
+    parseInt(selectedDate.slice(0,4)),
+    parseInt(selectedDate.slice(5,7)) - 1,
+    parseInt(selectedDate.slice(8,10)),
+    selectedStart - 8
+  )
+);
+const endTime = new Date(startTime.getTime() + duration * 3600000);
 
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
