@@ -56,24 +56,57 @@
     .selected-info strong { color: #2980b9; }
     .no-slot { text-align: center; color: #888; padding: 16px; font-size: 0.9rem; }
 
-    /* 全屏須知彈窗 */
-    .rules-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: #1a252f;
-      z-index: 9999;
-      overflow-y: auto;
-    }
-    .rules-overlay.active { display: block; animation: fadeSlideIn 0.35s ease; }
-    @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-    .rules-inner { max-width: 640px; margin: 0 auto; padding: 32px 20px 48px; }
-    .rules-success-badge {
-      background: linear-gradient(135deg, #27ae60, #2ecc71);
-      color: white; border-radius: 12px; padding: 16px 20px;
-      font-size: 1.2rem; font-weight: 700; text-align: center;
-      margin-bottom: 20px; box-shadow: 0 4px 16px rgba(39,174,96,0.4);
-    }
+/* 全屏須知彈窗 */
+.rules-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #1a252f;
+  z-index: 9999;
+  overflow-y: auto;
+}
+.rules-overlay.active { display: block; animation: fadeSlideIn 0.35s ease; }
+@keyframes fadeSlideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+.rules-inner { max-width: 640px; margin: 0 auto; padding: 32px 20px 48px; }
+.rules-success-badge {
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  color: white; border-radius: 12px; padding: 16px 20px;
+  font-size: 1.2rem; font-weight: 700; text-align: center;
+  margin-bottom: 20px; box-shadow: 0 4px 16px rgba(39,174,96,0.4);
+}
+.rules-screenshot-tip {
+  background: #fff3cd;
+  color: #7d5a00;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  text-align: center;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+.rule-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #ecf0f1;
+}
+.rule-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.rule-item em {
+  display: block;
+  color: #95a5a6;
+  font-size: 0.78rem;
+  margin-top: 2px;
+}
     .rules-booking-info {
       background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
       border-radius: 10px; padding: 14px 18px; margin-bottom: 24px;
@@ -109,39 +142,72 @@
 <body>
 
 <!-- ===== 全屏須知彈窗 ===== -->
-<div class="rules-overlay" id="rulesOverlay">
-  <div class="rules-inner">
-    <div class="rules-success-badge" id="overlayBadge">✅ 預約成功！Booking Confirmed!</div>
-    <div class="rules-booking-info" id="overlayBookingInfo">－</div>
-    <div class="rules-section-title">⚠️ 房間使用須知 Room Rules</div>
-    <ul class="rules-list">
-      >
-        <span class="rule-num">1</span>
-        <div><div class="rule-zh">請於預約時間前 5 分鐘到達，向當值同事出示會員證核對號碼。</div>
-        <div class="rule-en">Please arrive 5 minutes early and show your membership card to staff for verification.</div></div>
-      </li>
-      >
-        <span class="rule-num">2</span>
-        <div><div class="rule-zh">使用後請保持房間整潔，垃圾自行帶走。</div>
-        <div class="rule-en">Please keep the room tidy and take all rubbish with you after use.</div></div>
-      </li>
-      >
-        <span class="rule-num">3</span>
-        <div><div class="rule-zh">嚴禁在房間內進食外賣或飲用酒精飲品。</div>
-        <div class="rule-en">Takeaway food and alcoholic beverages are strictly prohibited inside the room.</div></div>
-      </li>
-      >
-        <span class="rule-num">4</span>
-        <div><div class="rule-zh">音量請控制在合理範圍，以免影響其他使用者。</div>
-        <div class="rule-en">Please keep noise to a reasonable level so as not to disturb other users.</div></div>
-      </li>
-      >
-        <span class="rule-num">5</span>
-        <div><div class="rule-zh">如需取消預約，請提前 24 小時通知同事。</div>
-        <div class="rule-en">To cancel your booking, please notify staff at least 24 hours in advance.</div></div>
-      </li>
-    </ul>
-    <button class="rules-back-btn" onclick="closeRules()" id="backBtn">🔄 返回重新預約 / Back to Booking</button>
+<div id="rulesOverlay" class="rules-overlay">
+  <div class="rules-content">
+    <h2 style="text-align:center; font-size:1.3rem; margin-bottom:4px;">🎉 BGIT Party Room</h2>
+    <h3 style="text-align:center; font-size:1rem; margin-bottom:8px; color:#e74c3c;">使用須知 Room Rules</h3>
+    <p style="text-align:center; font-size:0.78rem; background:#fff3cd; padding:8px; border-radius:8px; margin-bottom:16px;">
+      📸 截圖本頁面連同會員證向櫃台同事出示核對<br>
+      <em>Screenshot this page & show membership card to counter staff</em>
+    </p>
+
+    <div class="rule-item">
+      <span class="rule-icon">👟</span>
+      <div><strong>1.</strong> 入場前除鞋 · 預約時間前5分鐘到達出示會員證 · 取消請提前24小時通知<br>
+      <em>Remove shoes upon entry · Arrive 5 mins early with membership card · Cancel 24hrs in advance</em></div>
+    </div>
+
+    <div class="rule-item">
+      <span class="rule-icon">🚬</span>
+      <div><strong>2.</strong> 室內全面禁煙<br>
+      <em>No smoking inside the room</em></div>
+    </div>
+
+    <div class="rule-item">
+      <span class="rule-icon">💝</span>
+      <div><strong>3.</strong> 請愛惜所有設備及設施<br>
+      <em>Handle all equipment with care</em></div>
+    </div>
+
+    <div class="rule-item">
+      <span class="rule-icon">🗑️</span>
+      <div><strong>4.</strong> 離場時帶走垃圾放門外垃圾桶，設施還原<br>
+      <em>Dispose rubbish outside & restore all facilities before leaving</em></div>
+    </div>
+
+    <div class="rule-item">
+      <span class="rule-icon">🍱</span>
+      <div><strong>5.</strong> 可自備食物，禁榴槤等濃味食物 · 地氈區禁飲食 · 禁酒精飲品<br>
+      <em>Outside food OK, no strong-smelling food · No food/drink on carpet · No alcohol</em></div>
+    </div>
+
+    <div class="rule-item">
+      <span class="rule-icon">💡</span>
+      <div><strong>6.</strong> 離場前關掉所有電源（燈·冷氣·電視·電器）<br>
+      <em>Switch off all power before leaving (lights, AC, TV, appliances)</em></div>
+    </div>
+
+    <div class="rule-item">
+      <span class="rule-icon">⚖️</span>
+      <div><strong>7.</strong> 嚴禁非法及商業活動<br>
+      <em>No illegal or commercial activities</em></div>
+    </div>
+
+    <div class="rule-item">
+      <span class="rule-icon">📋</span>
+      <div><strong>8.</strong> 違規須進行中心服務令，詳情向工作員了解 😅<br>
+      <em>Violations may result in centre service order 😅</em></div>
+    </div>
+
+    <div class="rule-item">
+      <span class="rule-icon">❓</span>
+      <div><strong>9.</strong> 如有疑問請向當值職員查詢<br>
+      <em>For enquiries, please approach on-duty staff</em></div>
+    </div>
+
+    <button onclick="closeRules()" class="btn-primary" style="width:100%; margin-top:16px;">
+      ✅ 我已閱讀並同意 · I have read and agree
+    </button>
   </div>
 </div>
 
