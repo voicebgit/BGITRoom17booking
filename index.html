@@ -199,11 +199,12 @@
   let selectedStart = null;
   let lang = 'zh';
 
-  const T = {
-    zh: {
-      langBtn: 'English',
-      hTitle: 'BG Party Room 系統',
-      hSub: '只限星期五 14:00-22:00 ｜ 星期六 11:00-22:00 ｜ 星期日 11:00-18:00',
+const T = {
+  zh: {
+    langBtn: 'English',
+    hTitle: 'BG Party Room 系統',
+    hSub: '只限星期五 14:00-22:00 ｜ 星期六 11:00-22:00 ｜ 星期日 11:00-18:00',
+    hInfo: 'Party Room 運作將由 BG Committee - Beaver 協助管理　如有查詢 📩 IG：<a href="https://www.instagram.com/bgit_committee" target="_blank" style="color:#aed6f1;text-decoration:none;">@bgit_committee</a>',
       calTitle: '選擇日期',
       legAvail: '可預約', legSel: '已選擇', legFull: '已完全預約', legNa: '不可預約',
       slotTitle: '選擇時段',
@@ -231,10 +232,11 @@
       noSlot: '此日所有時段已被預約 😔',
       calWeekdays: ['日','一','二','三','四','五','六']
     },
-    en: {
-      langBtn: '中文',
-      hTitle: 'BG Party Room Booking',
-      hSub: 'Fri 14:00-22:00 ｜ Sat 11:00-22:00 ｜ Sun 11:00-18:00',
+ en: {
+    langBtn: '中文',
+    hTitle: 'BG Party Room Booking',
+    hSub: 'Fri 14:00-22:00 ｜ Sat 11:00-22:00 ｜ Sun 11:00-18:00',
+    hInfo: 'Party Room is managed by BG Committee - Beaver　Enquiries 📩 IG：<a href="https://www.instagram.com/bgit_committee" target="_blank" style="color:#aed6f1;text-decoration:none;">@bgit_committee</a>',
       calTitle: 'Select Date',
       legAvail: 'Available', legSel: 'Selected', legFull: 'Fully Booked', legNa: 'Unavailable',
       slotTitle: 'Select Time Slot',
@@ -288,6 +290,7 @@
     document.getElementById('memberId').placeholder = t.memberPh;
     document.getElementById('submitBtn').textContent = t.submitBtn;
     document.getElementById('backBtn').textContent = t.backBtn;
+    document.getElementById('h-info').innerHTML = t.hInfo;
 
  if (selectedStart !== null) {
       const dur = parseInt(document.getElementById('duration').value);
