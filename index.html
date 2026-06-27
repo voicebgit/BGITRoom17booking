@@ -157,7 +157,7 @@
     <h2>🕐 <span id="t-slotTitle">選擇時段</span></h2>
     <div class="selected-info" id="selectedDateInfo"></div>
     <div>
-      `abel id="t-durLabel">使用時數</label>
+      <abel id="t-durLabel">使用時數</label>
       <select id="duration" onchange="renderSlots()">
         <option value="1" id="dur1">1 小時</option>
         <option value="2" id="dur2" selected>2 小時</option>
@@ -170,7 +170,7 @@
     <h2>📝 <span id="t-formTitle">填寫預約資料</span></h2>
     <div id="bookingSummary" class="selected-info" style="display:block;margin-bottom:16px;"></div>
     <div id="msg" class="msg"></div>
-    abel for="memberId" id="t-memberLabel">會員號碼 *</label>
+    <abel for="memberId" id="t-memberLabel">會員號碼 *</label>
     <div style="display:flex; align-items:center; border:1px solid #ddd; border-radius:8px; overflow:hidden; margin-bottom:16px;">
       <span style="background:#eaf4fb; color:#2980b9; font-weight:700; padding:10px 12px; font-size:0.95rem; border-right:1px solid #ddd; white-space:nowrap;">BG</span>
       <input type="text" id="memberId" placeholder="請輸入號碼 / Enter ID" maxlength="18"
@@ -288,19 +288,7 @@
     document.getElementById('submitBtn').textContent = t.submitBtn;
     document.getElementById('backBtn').textContent = t.backBtn;
 
-    if (selectedDate) {
-      const date = new Date(selectedDate + 'T12:00:00');
-      const dow = date.getDay();
-      const hours = HOURS_BY_DAY[dow];
-      const dayLabel = lang === 'zh'
-        ? selectedDate + '（星期' + t.dayNames[dow] + '）'
-        : selectedDate + ' (' + t.dayNames[dow] + ')';
-      const info = document.getElementById('selectedDateInfo');
-      info.innerHTML = t.selectedLabel + '<strong>' + dayLabel + '</strong>　' +
-        t.availSlot + '<strong>' + hours.start + ':00 - ' + hours.end + ':00</strong>';
-    }
-
-    if (selectedStart !== null) {
+ if (selectedStart !== null) {
       const dur = parseInt(document.getElementById('duration').value);
       document.getElementById('bookingSummary').innerHTML =
         t.dateLabel + '<strong>' + selectedDate + '</strong>&nbsp;&nbsp;' +
@@ -308,7 +296,22 @@
     }
 
     renderCalendar();
+
     if (selectedDate) renderSlots();
+
+    if (selectedDate) {
+      const date2 = new Date(selectedDate + 'T12:00:00');
+      const dow2 = date2.getDay();
+      const hours2 = HOURS_BY_DAY[dow2];
+      const dayLabel2 = lang === 'zh'
+        ? selectedDate + '（星期' + t.dayNames[dow2] + '）'
+        : selectedDate + ' (' + t.dayNames[dow2] + ')';
+      const info2 = document.getElementById('selectedDateInfo');
+      info2.innerHTML = t.selectedLabel + '<strong>' + dayLabel2 + '</strong>　' +
+        t.availSlot + '<strong>' + hours2.start + ':00 - ' + hours2.end + ':00</strong>';
+      info2.style.display = 'block';
+    }
+
     if (selectedStart !== null) {
       document.getElementById('formCard').style.display = 'block';
     }
