@@ -264,10 +264,10 @@
     <div class="selected-info" id="selectedDateInfo"></div>
     <div>
       <label id="t-durLabel">使用時數</label>
-      <select id="duration" onchange="renderSlots()">
-        <option value="1" selected>1 小時 / 1 Hour</option>
-        <option value="2">2 小時 / 2 Hours</option>
-      </select>
+<select id="duration" onchange="renderSlots()">
+  <option value="1" id="dur1">1 小時</option>
+  <option value="2" id="dur2" selected>2 小時</option>
+</select>
     </div>
     <div class="time-slots" id="timeSlots"></div>
   </div>
@@ -391,9 +391,35 @@
     document.getElementById('t-memberLabel').textContent = t.memberLabel;
     document.getElementById('memberId').placeholder = t.memberPh;
     document.getElementById('submitBtn').textContent = t.submitBtn;
-    document.getElementById('backBtn').textContent = t.backBtn;
-    renderCalendar();
-    if (selectedDate) renderSlots();
+document.getElementById('backBtn').textContent = t.backBtn;
+
+// 更新 duration 選項文字
+document.getElementById('dur1').textContent = lang === 'zh' ? '1 小時' : '1 Hour';
+document.getElementById('dur2').textContent = lang === 'zh' ? '2 小時' : '2 Hours';
+
+// 若已選時段，重新更新 bookingSummary
+if (selectedStart !== null) {
+  const dur = parseInt(document.getElementById('duration').value);
+  const t2 = T[lang];
+  document.getElementById('bookingSummary').innerHTML =
+    t2.dateLabel + '<strong>' + selectedDate + '</strong>&nbsp;&nbsp;' +
+    t2.timeLabel + '<strong>' + selectedStart + ':00 - ' + (selectedStart + dur) + ':00</strong>';
+}
+// 若已選日期，重新更新 selectedDateInfo
+if (selectedDate) {
+  const date = new Date(selectedDate + 'T12:00:00');
+  const dow = date.getDay();
+  const hours = HOURS_BY_DAY[dow];
+  const t2 = T[lang];
+  const dayLabel = lang === 'zh'
+    ? selectedDate + '（星期' + t2.dayNames[dow] + '）'
+    : selectedDate + ' (' + t2.dayNames[dow] + ')';
+  const info = document.getElementById('selectedDateInfo');
+  info.innerHTML = t2.selectedLabel + '<strong>' + dayLabel + '</strong>　' +
+    t2.availSlot + '<strong>' + hours.start + ':00 - ' + hours.end + ':00</strong>';
+}
+renderCalendar();
+if (selectedDate) renderSlots();
   }
 
   // ── 初始化 ────────────────────────────────────────
@@ -506,9 +532,11 @@
     const t = T[lang];
     const hours = HOURS_BY_DAY[dow];
     const info = document.getElementById('selectedDateInfo');
-    info.innerHTML = t.selectedLabel +
-      '<strong>' + dateStr + '（' + (lang === 'zh' ? '星期' : '') + t.dayNames[dow] + '）</strong>　' +
-      t.availSlot + '<strong>' + hours.start + ':00 - ' + hours.end + ':00</strong>';
+const dayLabel = lang === 'zh'
+  ? dateStr + '（星期' + t.dayNames[dow] + '）'
+  : dateStr + ' (' + t.dayNames[dow] + ')';
+info.innerHTML = t.selectedLabel + '<strong>' + dayLabel + '</strong>　' +
+  t.availSlot + '<strong>' + hours.start + ':00 - ' + hours.end + ':00</strong>';
     info.style.display = 'block';
 
     document.getElementById('slotCard').style.display = 'block';
