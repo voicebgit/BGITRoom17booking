@@ -15,8 +15,6 @@
     .container { max-width: 720px; margin: 30px auto; padding: 0 16px; }
     .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
     .card h2 { font-size: 1.1rem; margin-bottom: 16px; color: #2c3e50; border-left: 4px solid #3498db; padding-left: 10px; }
-
-    /* 日曆 */
     .calendar-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
     .calendar-nav button { background: none; border: 1px solid #ddd; border-radius: 6px; padding: 4px 12px; cursor: pointer; font-size: 1rem; }
     .calendar-nav span { font-weight: 700; font-size: 1rem; color: #2c3e50; }
@@ -32,15 +30,11 @@
     .cal-legend { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
     .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: #666; }
     .legend-dot { width: 14px; height: 14px; border-radius: 4px; }
-
-    /* 時段 */
     .time-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 8px; }
     .slot-btn { padding: 10px 6px; border: 2px solid #ddd; border-radius: 8px; background: white; font-size: 0.85rem; cursor: pointer; text-align: center; transition: all 0.15s; }
     .slot-btn:hover:not(.disabled) { border-color: #3498db; color: #3498db; }
     .slot-btn.selected { border-color: #3498db; background: #3498db; color: white; font-weight: 700; }
     .slot-btn.disabled { background: #fdecea; border-color: #f5c6c6; color: #e74c3c; cursor: not-allowed; font-size: 0.75rem; }
-
-    /* 表單 */
     label { display: block; margin-bottom: 6px; font-size: 0.9rem; font-weight: 600; color: #555; }
     input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; margin-bottom: 16px; }
     input:focus { outline: none; border-color: #3498db; }
@@ -51,170 +45,72 @@
     .msg { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 0.9rem; display: none; }
     .msg.success { background: #d4edda; color: #155724; display: block; }
     .msg.error { background: #f8d7da; color: #721c24; display: block; }
-    .loading { text-align: center; color: #888; font-size: 0.9rem; padding: 12px; }
     .selected-info { background: #eaf4fb; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 0.9rem; color: #2c3e50; display: none; }
     .selected-info strong { color: #2980b9; }
     .no-slot { text-align: center; color: #888; padding: 16px; font-size: 0.9rem; }
-
-/* 全屏須知彈窗 */
-.rules-overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: #1a252f;
-  z-index: 9999;
-  overflow-y: auto;
-}
-.rules-overlay.active { display: block; animation: fadeSlideIn 0.35s ease; }
-@keyframes fadeSlideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-.rules-inner { max-width: 640px; margin: 0 auto; padding: 32px 20px 48px; }
-.rules-success-badge {
-  background: linear-gradient(135deg, #27ae60, #2ecc71);
-  color: white; border-radius: 12px; padding: 16px 20px;
-  font-size: 1.2rem; font-weight: 700; text-align: center;
-  margin-bottom: 20px; box-shadow: 0 4px 16px rgba(39,174,96,0.4);
-}
-.rules-screenshot-tip {
-  background: #fff3cd;
-  color: #7d5a00;
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 0.8rem;
-  text-align: center;
-  margin-bottom: 20px;
-  line-height: 1.6;
-}
-.rule-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 10px;
-  padding: 10px 14px;
-  margin-bottom: 8px;
-  font-size: 0.85rem;
-  line-height: 1.6;
-  color: #ecf0f1;
-}
-.rule-icon {
-  font-size: 1.1rem;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-.rule-item em {
-  display: block;
-  color: #95a5a6;
-  font-size: 0.78rem;
-  margin-top: 2px;
-}
-    .rules-booking-info {
-      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 10px; padding: 14px 18px; margin-bottom: 24px;
-      color: #ecf0f1; font-size: 0.95rem; line-height: 1.9;
-    }
+    .rules-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #1a252f; z-index: 9999; overflow-y: auto; }
+    .rules-overlay.active { display: block; animation: fadeSlideIn 0.35s ease; }
+    @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .rules-inner { max-width: 640px; margin: 0 auto; padding: 32px 20px 48px; }
+    .rules-success-badge { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; border-radius: 12px; padding: 16px 20px; font-size: 1.2rem; font-weight: 700; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(39,174,96,0.4); }
+    .rules-screenshot-tip { background: #fff3cd; color: #7d5a00; border-radius: 8px; padding: 10px 14px; font-size: 0.8rem; text-align: center; margin-bottom: 20px; line-height: 1.6; }
+    .rule-item { display: flex; align-items: flex-start; gap: 10px; background: rgba(255,255,255,0.06); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.85rem; line-height: 1.6; color: #ecf0f1; }
+    .rule-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
+    .rule-item em { display: block; color: #95a5a6; font-size: 0.78rem; margin-top: 2px; }
+    .rules-booking-info { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 14px 18px; margin-bottom: 24px; color: #ecf0f1; font-size: 0.95rem; line-height: 1.9; }
     .rules-booking-info strong { color: #3498db; }
-    .rules-section-title {
-      color: #e74c3c; font-size: 1.05rem; font-weight: 700;
-      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
-    }
-    .rules-list { list-style: none; padding: 0; margin-bottom: 32px; }
-    .rules-list li {
-      display: flex; gap: 12px; padding: 14px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-    }
-    .rule-num {
-      background: #e74c3c; color: white; border-radius: 50%;
-      width: 24px; height: 24px; min-width: 24px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem; font-weight: 700; margin-top: 2px;
-    }
-    .rule-zh { color: #ecf0f1; font-size: 0.95rem; line-height: 1.6; }
-    .rule-en { color: #7f8c8d; font-size: 0.82rem; margin-top: 3px; line-height: 1.5; }
-    .rules-back-btn {
-      width: 100%; padding: 16px; background: #3498db; color: white;
-      border: none; border-radius: 10px; font-size: 1.05rem;
-      cursor: pointer; font-weight: 700; transition: background 0.2s;
-      box-shadow: 0 4px 12px rgba(52,152,219,0.4);
-    }
+    .rules-back-btn { width: 100%; padding: 16px; background: #3498db; color: white; border: none; border-radius: 10px; font-size: 1.05rem; cursor: pointer; font-weight: 700; transition: background 0.2s; box-shadow: 0 4px 12px rgba(52,152,219,0.4); }
     .rules-back-btn:hover { background: #2980b9; }
   </style>
 </head>
 <body>
 
-<!-- ===== 全屏須知彈窗 ===== -->
 <div id="rulesOverlay" class="rules-overlay">
   <div class="rules-inner">
-
-    <div class="rules-success-badge" id="overlayBadge">✅ 成功！</div>
-
+    <div class="rules-success-badge" id="overlayBadge">✅ 預約成功！</div>
     <div class="rules-booking-info" id="overlayBookingInfo"></div>
-
     <h2 style="text-align:center; color:white; font-size:1.1rem; margin-bottom:4px;">🎉 BGIT Party Room</h2>
     <h3 style="text-align:center; color:#e74c3c; font-size:0.95rem; margin-bottom:12px;">使用須知 Room Rules</h3>
-
     <div class="rules-screenshot-tip">
       📸 請截圖本頁面，連同會員證向櫃台當值同事出示以作核對<br>
       <em>Screenshot this page & present with your membership card to counter staff for verification</em>
     </div>
-
-    <div class="rule-item">
-      <span class="rule-icon">👟</span>
-<div><strong>1.</strong> 入場前除鞋 · 預約時間前5分鐘到達出示會員證 · 逾時30分鐘未到視為放棄預約<br>
-<em>Remove shoes upon entry · Arrive 5 mins early with membership card · No-show after 30 mins will be treated as a forfeited booking</em></div>
+    <div class="rule-item"><span class="rule-icon">👟</span>
+      <div><strong>1.</strong> 入場前除鞋 · 預約時間前5分鐘到達出示會員證 · 逾時30分鐘未到視為放棄預約<br>
+      <em>Remove shoes upon entry · Arrive 5 mins early with membership card · No-show after 30 mins will be treated as a forfeited booking</em></div>
     </div>
-    <div class="rule-item">
-      <span class="rule-icon">🚬</span>
-      <div><strong>2.</strong> 室內全面禁煙<br>
-      <em>No smoking inside the room</em></div>
+    <div class="rule-item"><span class="rule-icon">🚬</span>
+      <div><strong>2.</strong> 室內全面禁煙<br><em>No smoking inside the room</em></div>
     </div>
-    <div class="rule-item">
-      <span class="rule-icon">💝</span>
-      <div><strong>3.</strong> 請愛惜所有設備及設施<br>
-      <em>Handle all equipment with care</em></div>
+    <div class="rule-item"><span class="rule-icon">💝</span>
+      <div><strong>3.</strong> 請愛惜所有設備及設施<br><em>Handle all equipment with care</em></div>
     </div>
-    <div class="rule-item">
-      <span class="rule-icon">🗑️</span>
-      <div><strong>4.</strong> 離場時帶走垃圾放門外垃圾桶，設施還原<br>
-      <em>Dispose rubbish outside & restore all facilities before leaving</em></div>
+    <div class="rule-item"><span class="rule-icon">🗑️</span>
+      <div><strong>4.</strong> 離場時帶走垃圾放門外垃圾桶，設施還原<br><em>Dispose rubbish outside & restore all facilities before leaving</em></div>
     </div>
-    <div class="rule-item">
-      <span class="rule-icon">🍱</span>
-      <div><strong>5.</strong> 可自備食物，禁榴槤等濃味食物 · 地氈區禁飲食 · 禁酒精飲品<br>
-      <em>Outside food OK, no strong-smelling food · No food/drink on carpet · No alcohol</em></div>
+    <div class="rule-item"><span class="rule-icon">🍱</span>
+      <div><strong>5.</strong> 可自備食物，禁榴槤等濃味食物 · 地氈區禁飲食 · 禁酒精飲品<br><em>Outside food OK, no strong-smelling food · No food/drink on carpet · No alcohol</em></div>
     </div>
-    <div class="rule-item">
-      <span class="rule-icon">💡</span>
-      <div><strong>6.</strong> 離場前關掉所有電源（燈·冷氣·電視·電器）<br>
-      <em>Switch off all power before leaving (lights, AC, TV, appliances)</em></div>
+    <div class="rule-item"><span class="rule-icon">💡</span>
+      <div><strong>6.</strong> 離場前關掉所有電源（燈·冷氣·電視·電器）<br><em>Switch off all power before leaving (lights, AC, TV, appliances)</em></div>
     </div>
-    <div class="rule-item">
-      <span class="rule-icon">⚖️</span>
-      <div><strong>7.</strong> 嚴禁非法及商業活動<br>
-      <em>No illegal or commercial activities</em></div>
+    <div class="rule-item"><span class="rule-icon">⚖️</span>
+      <div><strong>7.</strong> 嚴禁非法及商業活動<br><em>No illegal or commercial activities</em></div>
     </div>
-    <div class="rule-item">
-      <span class="rule-icon">📋</span>
-      <div><strong>8.</strong> 如有違規或損壞或須進行中心服務令，詳情向工作員了解 😅<br>
-      <em>Violations or broken may result in centre service order 😅</em></div>
+    <div class="rule-item"><span class="rule-icon">📋</span>
+      <div><strong>8.</strong> 如有違規或損壞須進行中心服務令，詳情向工作員了解 😅<br><em>Violations or damage may result in centre service order 😅</em></div>
     </div>
-    <div class="rule-item">
-      <span class="rule-icon">❓</span>
-      <div><strong>9.</strong> 如有疑問請向當值職員查詢<br>
-      <em>For enquiries, please approach on-duty staff</em></div>
+    <div class="rule-item"><span class="rule-icon">❓</span>
+      <div><strong>9.</strong> 如有疑問請向當值職員查詢<br><em>For enquiries, please approach on-duty staff</em></div>
     </div>
-
-    <button id="backBtn" onclick="closeRules()" class="rules-back-btn">
-      🔄 返回重新 · Back to Booking
-    </button>
-
+    <button id="backBtn" onclick="closeRules()" class="rules-back-btn">🔄 返回重新預約 · Back to Booking</button>
   </div>
 </div>
-<!-- ===== 頁頭 ===== -->
+
 <header>
   <button class="lang-btn" id="langBtn" onclick="toggleLang()">English</button>
   <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap;">
-    <img src="BGIT_Logo_transparent.png" alt="BGIT Logo"
-      style="height:60px; width:auto; flex-shrink:0;">
+    <img src="BGIT_Logo_transparent.png" alt="BGIT Logo" style="height:60px; width:auto; flex-shrink:0;">
     <div style="text-align:center;">
       <h1>🎉 <span id="h-title">BG Party Room 系統</span></h1>
       <p id="h-sub">只限星期五 14:00-22:00 ｜ 星期六 11:00-22:00 ｜ 星期日 11:00-18:00</p>
@@ -222,19 +118,18 @@
   </div>
   <p style="margin-top:10px; font-size:0.78rem; opacity:0.7; text-align:center;">
     Party Room 運作將由 BG Committee - Beaver 協助管理　如有查詢 📩 IG：
-    <a href="https://www.instagram.com/bgit_committee" target="_blank"
-      style="color:#aed6f1; text-decoration:none;">@bgit_committee</a>
+    <a href="https://www.instagram.com/bgit_committee" target="_blank" style="color:#aed6f1; text-decoration:none;">@bgit_committee</a>
   </p>
 </header>
 
 <div class="container">
 
-  <!-- 日曆 -->
   <div class="card">
     <h2>📅 <span id="t-calTitle">選擇日期</span></h2>
     <div class="calendar-nav">
       <button onclick="changeMonth(-1)">‹</button>
-      <span id="calTitle"></span>
+      <span id
+        ="calTitle"></span>
       <button onclick="changeMonth(1)">›</button>
     </div>
     <div class="calendar-grid" id="calGrid"></div>
@@ -251,28 +146,26 @@
         <div class="legend-dot" style="background:#fdecea;border:1px solid #e74c3c;"></div>
         <span id="leg-full">已完全預約</span>
       </div>
-             <div class="legend-item">
-          <div class="legend-dot" style="background:#f0f0f0;border:1px solid #ccc;"></div>
-          <span id="leg-na">不可預約</span>
-        </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#f0f0f0;border:1px solid #ccc;"></div>
+        <span id="leg-na">不可預約</span>
       </div>
+    </div>
   </div>
 
-  <!-- 時段選擇 -->
   <div class="card" id="slotCard" style="display:none;">
     <h2>🕐 <span id="t-slotTitle">選擇時段</span></h2>
     <div class="selected-info" id="selectedDateInfo"></div>
     <div>
-      <label id="t-durLabel">使用時數</label>
-<select id="duration" onchange="renderSlots()">
-  <option value="1" id="dur1">1 小時</option>
-  <option value="2" id="dur2" selected>2 小時</option>
-</select>
+      abel id="t-durLabel">使用時數</label>
+      <select id="duration" onchange="renderSlots()">
+        <option value="1" id="dur1">1 小時</option>
+        <option value="2" id="dur2" selected>2 小時</option>
+      </select>
     </div>
     <div class="time-slots" id="timeSlots"></div>
   </div>
 
-<!-- 預約表單 -->
   <div class="card" id="formCard" style="display:none;">
     <h2>📝 <span id="t-formTitle">填寫預約資料</span></h2>
     <div id="bookingSummary" class="selected-info" style="display:block;margin-bottom:16px;"></div>
@@ -286,12 +179,12 @@
     <button class="btn" id="submitBtn" onclick="submitBooking()">確認預約 / Confirm Booking</button>
   </div>
 
-</div><!-- end container -->
+</div>
 
 <script>
   const WORKER_URL = "https://room17booking.voicebgit.workers.dev/";
-  const MAX_BOOKINGS = 3;    // 每會員最多未來預約次數
-  const MAX_HOURS = 6;       // 每會員最多未來預約合共小時數
+  const MAX_BOOKINGS = 3;
+  const MAX_HOURS = 6;
 
   const HOURS_BY_DAY = {
     5: { start: 14, end: 22 },
@@ -305,19 +198,19 @@
   let selectedStart = null;
   let lang = 'zh';
 
-  // ── 語言字串 ──────────────────────────────────────
   const T = {
     zh: {
       langBtn: 'English',
-      hTitle: 'Party Room 預約系統',
+      hTitle: 'BG Party Room 系統',
       hSub: '只限星期五 14:00-22:00 ｜ 星期六 11:00-22:00 ｜ 星期日 11:00-18:00',
-      calTitle: '選擇預約日期',
+      calTitle: '選擇日期',
       legAvail: '可預約', legSel: '已選擇', legFull: '已完全預約', legNa: '不可預約',
       slotTitle: '選擇時段',
       durLabel: '使用時數',
+      dur1: '1 小時', dur2: '2 小時',
       formTitle: '填寫預約資料',
       memberLabel: '會員號碼 *',
-      memberPh: '請輸入你的會員號碼',
+      memberPh: '請輸入號碼',
       submitBtn: '確認預約',
       submitting: '提交中...',
       booked: '已預約',
@@ -339,15 +232,16 @@
     },
     en: {
       langBtn: '中文',
-      hTitle: 'Party Room Booking',
+      hTitle: 'BG Party Room Booking',
       hSub: 'Fri 14:00-22:00 ｜ Sat 11:00-22:00 ｜ Sun 11:00-18:00',
       calTitle: 'Select Date',
       legAvail: 'Available', legSel: 'Selected', legFull: 'Fully Booked', legNa: 'Unavailable',
       slotTitle: 'Select Time Slot',
       durLabel: 'Duration',
+      dur1: '1 Hour', dur2: '2 Hours',
       formTitle: 'Booking Details',
       memberLabel: 'Member ID *',
-      memberPh: 'Enter your member ID',
+      memberPh: 'Enter ID',
       submitBtn: 'Confirm Booking',
       submitting: 'Submitting...',
       booked: 'Booked',
@@ -369,7 +263,6 @@
     }
   };
 
-  // ── 語言切換 ──────────────────────────────────────
   function toggleLang() {
     lang = lang === 'zh' ? 'en' : 'zh';
     applyLang();
@@ -387,44 +280,40 @@
     document.getElementById('leg-na').textContent = t.legNa;
     document.getElementById('t-slotTitle').textContent = t.slotTitle;
     document.getElementById('t-durLabel').textContent = t.durLabel;
+    document.getElementById('dur1').textContent = t.dur1;
+    document.getElementById('dur2').textContent = t.dur2;
     document.getElementById('t-formTitle').textContent = t.formTitle;
     document.getElementById('t-memberLabel').textContent = t.memberLabel;
     document.getElementById('memberId').placeholder = t.memberPh;
     document.getElementById('submitBtn').textContent = t.submitBtn;
-document.getElementById('backBtn').textContent = t.backBtn;
+    document.getElementById('backBtn').textContent = t.backBtn;
 
-// 更新 duration 選項文字
-document.getElementById('dur1').textContent = lang === 'zh' ? '1 小時' : '1 Hour';
-document.getElementById('dur2').textContent = lang === 'zh' ? '2 小時' : '2 Hours';
+    if (selectedDate) {
+      const date = new Date(selectedDate + 'T12:00:00');
+      const dow = date.getDay();
+      const hours = HOURS_BY_DAY[dow];
+      const dayLabel = lang === 'zh'
+        ? selectedDate + '（星期' + t.dayNames[dow] + '）'
+        : selectedDate + ' (' + t.dayNames[dow] + ')';
+      const info = document.getElementById('selectedDateInfo');
+      info.innerHTML = t.selectedLabel + '<strong>' + dayLabel + '</strong>　' +
+        t.availSlot + '<strong>' + hours.start + ':00 - ' + hours.end + ':00</strong>';
+    }
 
-// 若已選時段，重新更新 bookingSummary
-if (selectedStart !== null) {
-  const dur = parseInt(document.getElementById('duration').value);
-  const t2 = T[lang];
-  document.getElementById('bookingSummary').innerHTML =
-    t2.dateLabel + '<strong>' + selectedDate + '</strong>&nbsp;&nbsp;' +
-    t2.timeLabel + '<strong>' + selectedStart + ':00 - ' + (selectedStart + dur) + ':00</strong>';
-}
-// 若已選日期，重新更新 selectedDateInfo
-if (selectedDate) {
-  const date = new Date(selectedDate + 'T12:00:00');
-  const dow = date.getDay();
-  const hours = HOURS_BY_DAY[dow];
-  const t2 = T[lang];
-  const dayLabel = lang === 'zh'
-    ? selectedDate + '（星期' + t2.dayNames[dow] + '）'
-    : selectedDate + ' (' + t2.dayNames[dow] + ')';
-  const info = document.getElementById('selectedDateInfo');
-  info.innerHTML = t2.selectedLabel + '<strong>' + dayLabel + '</strong>　' +
-    t2.availSlot + '<strong>' + hours.start + ':00 - ' + hours.end + ':00</strong>';
-}
-renderCalendar();
-if (selectedDate) renderSlots();
-if (selectedStart !== null) {
-  document.getElementById('formCard').style.display = 'block';
-}
+    if (selectedStart !== null) {
+      const dur = parseInt(document.getElementById('duration').value);
+      document.getElementById('bookingSummary').innerHTML =
+        t.dateLabel + '<strong>' + selectedDate + '</strong>&nbsp;&nbsp;' +
+        t.timeLabel + '<strong>' + selectedStart + ':00 - ' + (selectedStart + dur) + ':00</strong>';
+    }
 
-  // ── 初始化 ────────────────────────────────────────
+    renderCalendar();
+    if (selectedDate) renderSlots();
+    if (selectedStart !== null) {
+      document.getElementById('formCard').style.display = 'block';
+    }
+  }
+
   const now = new Date();
   currentYear = now.getFullYear();
   currentMonth = now.getMonth();
@@ -445,7 +334,6 @@ if (selectedStart !== null) {
     }
   }
 
-  // ── 月份導航 ──────────────────────────────────────
   function changeMonth(dir) {
     currentMonth += dir;
     if (currentMonth > 11) { currentMonth = 0; currentYear++; }
@@ -453,35 +341,29 @@ if (selectedStart !== null) {
     renderCalendar();
   }
 
-  // ── 日曆渲染 ──────────────────────────────────────
   function renderCalendar() {
     const t = T[lang];
     document.getElementById('calTitle').textContent =
       lang === 'zh'
         ? currentYear + '年 ' + t.months[currentMonth]
         : t.months[currentMonth] + ' ' + currentYear;
-
     const grid = document.getElementById('calGrid');
     grid.innerHTML = '';
-
     t.calWeekdays.forEach(d => {
       const h = document.createElement('div');
       h.className = 'cal-header';
       h.textContent = d;
       grid.appendChild(h);
     });
-
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
     const today = new Date();
     today.setHours(0,0,0,0);
-
     for (let i = 0; i < firstDay; i++) {
       const empty = document.createElement('div');
       empty.className = 'cal-day empty';
       grid.appendChild(empty);
     }
-
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(currentYear, currentMonth, d);
       const dow = date.getDay();
@@ -491,7 +373,6 @@ if (selectedStart !== null) {
       const cell = document.createElement('div');
       cell.textContent = d;
       cell.className = 'cal-day';
-
       if (isPast || !isAvailableDay) {
         cell.classList.add('past');
         cell.style.color = '#ccc';
@@ -524,21 +405,19 @@ if (selectedStart !== null) {
     return bookedHours.size >= totalSlots;
   }
 
-  // ── 選擇日期 ──────────────────────────────────────
   function selectDate(date, dow, dateStr, clickedCell) {
     document.querySelectorAll('.cal-day.selected').forEach(c => c.classList.remove('selected'));
     clickedCell.classList.add('selected');
     selectedDate = dateStr;
     selectedStart = null;
-
     const t = T[lang];
     const hours = HOURS_BY_DAY[dow];
+    const dayLabel = lang === 'zh'
+      ? dateStr + '（星期' + t.dayNames[dow] + '）'
+      : dateStr + ' (' + t.dayNames[dow] + ')';
     const info = document.getElementById('selectedDateInfo');
-const dayLabel = lang === 'zh'
-  ? dateStr + '（星期' + t.dayNames[dow] + '）'
-  : dateStr + ' (' + t.dayNames[dow] + ')';
-info.innerHTML = t.selectedLabel + '<strong>' + dayLabel + '</strong>　' +
-  t.availSlot + '<strong>' + hours.start + ':00 - ' + hours.end + ':00</strong>';
+    info.innerHTML = t.selectedLabel + '<strong>' + dayLabel + '</strong>　' +
+       t.availSlot + '<strong>' + hours.start + ':00 - ' + hours.end + ':00</strong>';
     info.style.display = 'block';
 
     document.getElementById('slotCard').style.display = 'block';
