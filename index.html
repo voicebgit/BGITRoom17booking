@@ -116,10 +116,11 @@
       <p id="h-sub">只限星期五 14:00-22:00 ｜ 星期六 11:00-22:00 ｜ 星期日 11:00-18:00</p>
     </div>
   </div>
-  <p style="margin-top:10px; font-size:0.78rem; opacity:0.7; text-align:center;">
-    Party Room 運作將由 BG Committee - Beaver 協助管理　如有查詢 📩 IG：
-    <a href="https://www.instagram.com/bgit_committee" target="_blank" style="color:#aed6f1; text-decoration:none;">@bgit_committee</a>
-  </p>
+<p id="h-info" style="margin-top:10px; font-size:0.78rem; opacity:0.7; text-align:center;">
+  Party Room 運作將由 BG Committee - Beaver 協助管理　如有查詢 📩 IG：
+  <a href="https://www.instagram.com/bgit_committee" target="_blank"
+    style="color:#aed6f1; text-decoration:none;">@bgit_committee</a>
+</p>
 </header>
 
 <div class="container">
@@ -157,7 +158,7 @@
     <h2>🕐 <span id="t-slotTitle">選擇時段</span></h2>
     <div class="selected-info" id="selectedDateInfo"></div>
     <div>
-      <abel id="t-durLabel">使用時數</label>
+<div id="t-durLabel" style="margin-bottom:6px; font-size:0.9rem; font-weight:600; color:#555;">使用時數</div>
       <select id="duration" onchange="renderSlots()">
         <option value="1" id="dur1">1 小時</option>
         <option value="2" id="dur2" selected>2 小時</option>
@@ -170,7 +171,7 @@
     <h2>📝 <span id="t-formTitle">填寫預約資料</span></h2>
     <div id="bookingSummary" class="selected-info" style="display:block;margin-bottom:16px;"></div>
     <div id="msg" class="msg"></div>
-    <abel for="memberId" id="t-memberLabel">會員號碼 *</label>
+<div id="t-memberLabel" style="margin-bottom:6px; font-size:0.9rem; font-weight:600; color:#555;">會員號碼 *</div>
     <div style="display:flex; align-items:center; border:1px solid #ddd; border-radius:8px; overflow:hidden; margin-bottom:16px;">
       <span style="background:#eaf4fb; color:#2980b9; font-weight:700; padding:10px 12px; font-size:0.95rem; border-right:1px solid #ddd; white-space:nowrap;">BG</span>
       <input type="text" id="memberId" placeholder="請輸入號碼 / Enter ID" maxlength="18"
