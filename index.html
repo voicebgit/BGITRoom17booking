@@ -419,6 +419,10 @@ if (selectedDate) {
     t2.availSlot + '<strong>' + hours.start + ':00 - ' + hours.end + ':00</strong>';
 }
 renderCalendar();
+    // 若已選時段，重新顯示 formCard
+if (selectedStart !== null) {
+  document.getElementById('formCard').style.display = 'block';
+}
 if (selectedDate) renderSlots();
   }
 
