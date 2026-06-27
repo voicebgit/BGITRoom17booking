@@ -145,7 +145,7 @@
 <div id="rulesOverlay" class="rules-overlay">
   <div class="rules-inner">
 
-    <div class="rules-success-badge" id="overlayBadge">✅ 預約成功！</div>
+    <div class="rules-success-badge" id="overlayBadge">✅ 成功！</div>
 
     <div class="rules-booking-info" id="overlayBookingInfo"></div>
 
@@ -159,8 +159,8 @@
 
     <div class="rule-item">
       <span class="rule-icon">👟</span>
-      <div><strong>1.</strong> 入場前除鞋 · 預約時間前5分鐘到達出示會員證 · 取消請提前24小時通知<br>
-      <em>Remove shoes upon entry · Arrive 5 mins early with membership card · Cancel 24hrs in advance</em></div>
+<div><strong>1.</strong> 入場前除鞋 · 預約時間前5分鐘到達出示會員證 · 逾時30分鐘未到視為放棄預約<br>
+<em>Remove shoes upon entry · Arrive 5 mins early with membership card · No-show after 30 mins will be treated as a forfeited booking</em></div>
     </div>
     <div class="rule-item">
       <span class="rule-icon">🚬</span>
@@ -204,7 +204,7 @@
     </div>
 
     <button id="backBtn" onclick="closeRules()" class="rules-back-btn">
-      🔄 返回重新預約 · Back to Booking
+      🔄 返回重新 · Back to Booking
     </button>
 
   </div>
@@ -212,7 +212,7 @@
 <!-- ===== 頁頭 ===== -->
 <header>
   <button class="lang-btn" id="langBtn" onclick="toggleLang()">English</button>
-  <h1>🎉 <span id="h-title">BG Party Room 預約系統</span></h1>
+  <h1>🎉 <span id="h-title">BG Party Room 系統</span></h1>
   <p id="h-sub">只限星期五 14:00-22:00 ｜ 星期六 11:00-22:00 ｜ 星期日 11:00-18:00</p>
 </header>
 
@@ -220,7 +220,7 @@
 
   <!-- 日曆 -->
   <div class="card">
-    <h2>📅 <span id="t-calTitle">選擇預約日期</span></h2>
+    <h2>📅 <span id="t-calTitle">選擇日期</span></h2>
     <div class="calendar-nav">
       <button onclick="changeMonth(-1)">‹</button>
       <span id="calTitle"></span>
@@ -266,8 +266,12 @@
     <h2>📝 <span id="t-formTitle">填寫預約資料</span></h2>
     <div id="bookingSummary" class="selected-info" style="display:block;margin-bottom:16px;"></div>
     <div id="msg" class="msg"></div>
-    <label for="memberId" id="t-memberLabel">會員號碼 *</label>
-    <input type="text" id="memberId" placeholder="請輸入你的會員號碼 / Enter your member ID" maxlength="20">
+abel for="memberId" id="t-memberLabel">會員號碼 *</label>
+<div style="display:flex; align-items:center; border:1px solid #ddd; border-radius:8px; overflow:hidden; margin-bottom:16px;">
+  <span style="background:#eaf4fb; color:#2980b9; font-weight:700; padding:10px 12px; font-size:0.95rem; border-right:1px solid #ddd; white-space:nowrap;">BG</span>
+  <input type="text" id="memberId" placeholder="請輸入號碼 / Enter ID" maxlength="18"
+    style="border:none; border-radius:0; margin-bottom:0; flex:1;">
+</div>
     <button class="btn" id="submitBtn" onclick="submitBooking()" id="t-submitBtn">確認預約 / Confirm Booking</button>
   </div>
 
@@ -603,7 +607,7 @@ function checkMemberLimit(memberId) {
   // ── 提交預約 ──────────────────────────────────────
 async function submitBooking() {
   const t = T[lang];
-  const memberId = document.getElementById('memberId').value.trim();
+const memberId = 'BG' + document.getElementById('memberId').value.trim().toUpperCase();
   if (!memberId) { showMsg(t.errMember, 'error'); return; }
   if (!selectedDate || selectedStart === null) { showMsg(t.errSelect, 'error'); return; }
 
