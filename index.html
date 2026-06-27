@@ -618,8 +618,9 @@ function checkMemberLimit(memberId) {
   // ── 提交預約 ──────────────────────────────────────
 async function submitBooking() {
   const t = T[lang];
-const memberId = 'BG' + document.getElementById('memberId').value.trim().toUpperCase();
-  if (!memberId) { showMsg(t.errMember, 'error'); return; }
+const memberInput = document.getElementById('memberId').value.trim();
+if (!memberInput) { showMsg(t.errMember, 'error'); return; }
+const memberId = 'BG' + memberInput.toUpperCase();
   if (!selectedDate || selectedStart === null) { showMsg(t.errSelect, 'error'); return; }
 
   const duration = parseInt(document.getElementById('duration').value);
