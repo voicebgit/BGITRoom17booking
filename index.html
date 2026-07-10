@@ -110,7 +110,7 @@
 <header>
   <button class="lang-btn" id="langBtn" onclick="toggleLang()">English</button>
   <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap;">
-    <img src="BGIT_Logo_transparent.png" alt="BGIT Logo" style="height:60px; width:auto; flex-shrink:0;">
+    <img src="BGIT_Logo.jpg" alt="BGIT Logo" style="height:60px; width:auto; flex-shrink:0;">
     <div style="text-align:center;">
       <h1>🎉 <span id="h-title">BG Party Room 系統</span></h1>
       <p id="h-sub">只限星期五 14:00-22:00 ｜ 星期六 11:00-22:00 ｜ 星期日 11:00-18:00</p>
@@ -172,11 +172,7 @@
     <div id="bookingSummary" class="selected-info" style="display:block;margin-bottom:16px;"></div>
     <div id="msg" class="msg"></div>
 <div id="t-memberLabel" style="margin-bottom:6px; font-size:0.9rem; font-weight:600; color:#555;">會員號碼 *</div>
-    <div style="display:flex; align-items:center; border:1px solid #ddd; border-radius:8px; overflow:hidden; margin-bottom:16px;">
-      <span style="background:#eaf4fb; color:#2980b9; font-weight:700; padding:10px 12px; font-size:0.95rem; border-right:1px solid #ddd; white-space:nowrap;">BG</span>
-      <input type="text" id="memberId" placeholder="請輸入號碼 / Enter ID" maxlength="18"
-        style="border:none; border-radius:0; margin-bottom:0; flex:1;">
-    </div>
+<input type="number" id="memberId" placeholder="請輸入會員號碼 / Enter member number" maxlength="18" style="margin-bottom:16px;">
     <button class="btn" id="submitBtn" onclick="submitBooking()">確認預約 / Confirm Booking</button>
   </div>
 
@@ -534,9 +530,8 @@ function checkMemberLimit(memberId) {
   // ── 提交預約 ──────────────────────────────────────
 async function submitBooking() {
   const t = T[lang];
-const memberInput = document.getElementById('memberId').value.trim();
-if (!memberInput) { showMsg(t.errMember, 'error'); return; }
-const memberId = 'BG' + memberInput.toUpperCase();
+const memberId = document.getElementById('memberId').value.trim();
+if (!memberId) { showMsg(t.errMember, 'error'); return; }
   if (!selectedDate || selectedStart === null) { showMsg(t.errSelect, 'error'); return; }
 
   const duration = parseInt(document.getElementById('duration').value);
