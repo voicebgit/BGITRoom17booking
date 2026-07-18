@@ -459,15 +459,16 @@ function renderSlots() {
     // 是否與其他 booking 衝突
     const conflict = dayBooked.some(b => h < b.end && endH > b.start);
 
-    // 是否已經過去的時段（同一天而且開始時間早於現在）
-const nowHKT = new Date(now.getTime() + 8 * 3600000);
-const slotDateHKT = new Date(Date.UTC(
+ // 進行中的時段仍可預約，只有已完結的時段才禁用
+const slotStart = new Date(Date.UTC(
   parseInt(selectedDate.slice(0,4)),
   parseInt(selectedDate.slice(5,7)) - 1,
   parseInt(selectedDate.slice(8,10)),
   h - 8
 ));
-const isPastSlot = slotDateHKT < now;
+
+const slotEnd = new Date(slotStart.getTime() + duration * 3600000);
+const isPastSlot = slotEnd <= now;
 
     const disabled = conflict || isPastSlot;
 
@@ -544,7 +545,6 @@ if (!memberId) { showMsg(t.errMember, 'error'); return; }
   }
 
 // 強制用香港時間 UTC+8 計算
-const offsetMs = 8 * 60 * 60 * 1000;
 const startTime = new Date(
   Date.UTC(
     parseInt(selectedDate.slice(0,4)),
@@ -554,7 +554,18 @@ const startTime = new Date(
   )
 );
 const endTime = new Date(startTime.getTime() + duration * 3600000);
-
+const now = new Date();
+if (endTime <= now) {
+  showMsg(
+    lang === 'zh'
+      ? '抱歉，你選擇的時段已經完結，請重新選擇。'
+      : 'Sorry, the selected time slot has already ended. Please choose another slot.',
+    'error'
+  );
+  renderSlots();
+  return;
+}
+  
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
   btn.textContent = t.submitting;
