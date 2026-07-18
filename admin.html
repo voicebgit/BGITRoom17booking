@@ -91,10 +91,14 @@
     </h2>
     <div id="adminMsg" class="msg"></div>
     <div class="row" style="margin-bottom:14px">
-      <div>
-        <label>篩選日期（留空顯示全部）</label>
-        <input type="date" id="filterDate" onchange="renderTable(allBookings)">
-      </div>
+<div>
+  <label>開始日期</label>
+  <input type="date" id="filterFrom" onchange="renderTable(allBookings)">
+</div>
+<div>
+  <label>結束日期</label>
+  <input type="date" id="filterTo" onchange="renderTable(allBookings)">
+</div>
       <div style="display:flex;align-items:flex-end;padding-bottom:14px">
         <button class="btn btn-blue" onclick="clearFilter()">清除篩選</button>
         &nbsp;
@@ -227,29 +231,38 @@
     }
   }
 
-  function clearFilter() {
-    document.getElementById('filterDate').value = '';
-    renderTable(allBookings);
-  }
+function clearFilter() {
+  document.getElementById('filterFrom').value = '';
+  document.getElementById('filterTo').value = '';
+  renderTable(allBookings);
+}
 
   // 顯示預約列表
   function renderTable(data) {
-    const filterDate = document.getElementById('filterDate').value;
+const filterFrom = document.getElementById('filterFrom').value;
+const filterTo = document.getElementById('filterTo').value;
     const now = new Date();
     const tbody = document.getElementById('bookingBody');
 
-    let filtered = data;
-    if (filterDate) {
-      filtered = data.filter(b => {
-        const d = new Date(b.startTime);
-        return formatDate(d) === filterDate;
-      });
-    }
+let filtered = data;
+
+// 日期範圍篩選
+if (filterFrom || filterTo) {
+  filtered = data.filter(b => {
+    const d = formatDate(new Date(b.startTime));
+    if (filterFrom && d < filterFrom) return false;
+    if (filterTo && d > filterTo) return false;
+    return true;
+  });
+}
+
+// 列表只顯示未完結的預約，匯出 Excel 仍保留全部記錄
+filtered = filtered.filter(b => new Date(b.endTime) > now);
 
     if (filtered.length === 0) {
       tbody.innerHTML =
         '<tr><td colspan="6" class="loading">' +
-        (filterDate ? '該日期沒有預約記錄。' : '暫無預約記錄。') +
+        ((filterFrom || filterTo) ? '所選日期範圍內沒有未完結的預約記錄。' : '暫無未完結的預約記錄。') +
         '</td></tr>';
       return;
     }
@@ -397,7 +410,7 @@
     if (!internalSelectedDate) return;
 
     const duration = parseInt(document.getElementById('internalDuration').value);
-    const date = new Date(internalSelectedDate);
+ const date = new Date(internalSelectedDate + 'T12:00:00');
     const dow = date.getDay();
     const hours = HOURS_BY_DAY[dow];
     const container = document.getElementById('internalSlots');
@@ -413,20 +426,38 @@
       }
     });
 
-    for (let h = hours.start; h <= hours.end - duration; h++) {
-      const endH = h + duration;
-      const taken = dayBooked.some(b => h < b.end && endH > b.start);
-      const btn = document.createElement('button');
-      btn.className = 'slot-btn-admin' + (taken ? ' taken' : '');
-      btn.innerHTML = h + ':00<br><small>-' + endH + ':00</small>';
+const now = new Date();
 
-      if (taken) {
-        btn.innerHTML += '<br><small>已預約</small>';
-      } else {
-        btn.onclick = () => selectInternalSlot(btn, h, endH);
-      }
-      container.appendChild(btn);
-    }
+for (let h = hours.start; h <= hours.end - duration; h++) {
+  const endH = h + duration;
+  const taken = dayBooked.some(b => h < b.end && endH > b.start);
+
+  // 進行中的時段仍可扣起，只有已完結的時段才禁用
+  const slotStart = new Date(Date.UTC(
+    parseInt(internalSelectedDate.slice(0,4)),
+    parseInt(internalSelectedDate.slice(5,7)) - 1,
+    parseInt(internalSelectedDate.slice(8,10)),
+    h - 8
+  ));
+  const slotEnd = new Date(slotStart.getTime() + duration * 3600000);
+  const isPastSlot = slotEnd <= now;
+
+  const disabled = taken || isPastSlot;
+
+  const btn = document.createElement('button');
+  btn.className = 'slot-btn-admin' + (disabled ? ' taken' : '');
+  btn.innerHTML = h + ':00<br><small>-' + endH + ':00</small>';
+
+  if (taken) {
+    btn.innerHTML += '<br><small>已預約</small>';
+  } else if (isPastSlot) {
+    btn.innerHTML += '<br><small>已過去</small>';
+  } else {
+    btn.onclick = () => selectInternalSlot(btn, h, endH);
+  }
+
+  container.appendChild(btn);
+}
   }
 
   function selectInternalSlot(btn, startH, endH) {
@@ -448,12 +479,19 @@
 
     const duration = parseInt(document.getElementById('internalDuration').value);
     const note = document.getElementById('internalNote').value.trim() || '內部';
-    const startTime = new Date(
-      internalSelectedDate + 'T' +
-      String(internalSelectedStart).padStart(2,'0') +
-      ':00:00'
-    );
-    const endTime = new Date(startTime.getTime() + duration * 3600000);
+const startTime = new Date(Date.UTC(
+  parseInt(internalSelectedDate.slice(0,4)),
+  parseInt(internalSelectedDate.slice(5,7)) - 1,
+  parseInt(internalSelectedDate.slice(8,10)),
+  internalSelectedStart - 8
+));
+const endTime = new Date(startTime.getTime() + duration * 3600000);
+
+if (endTime <= new Date()) {
+  renderInternalSlots();
+  showInternalMsg('抱歉，你選擇的時段已經完結，請重新選擇。', 'error');
+  return;
+}
 
     try {
       const res = await fetch(WORKER_URL, {
@@ -473,6 +511,9 @@
         document.getElementById('internalSubmitBtn').style.display = 'none';
         internalSelectedStart = null;
         loadBookings();
+      } else if (result.message === 'Time slot already booked') {
+        renderInternalSlots();
+        showInternalMsg('抱歉，該時段剛剛已被其他人預約或扣起，請重新選擇。', 'error');
       } else {
         showInternalMsg('提交失敗，請重試。', 'error');
       }
@@ -482,39 +523,45 @@
   }
 
   // 匯出 Excel
-  function exportExcel() {
-    const from = document.getElementById('exportFrom').value;
-    const to = document.getElementById('exportTo').value;
-    if (!from || !to) {
-      showAdminMsg('請選擇開始及結束日期。', 'error');
-      return;
-    }
+function exportExcel() {
+  const from = document.getElementById('exportFrom').value;
+  const to = document.getElementById('exportTo').value;
 
-    const fromDate = new Date(from);
-    const toDate = new Date(to + 'T23:59:59');
-    const filtered = allBookings.filter(b => {
-      const t = new Date(b.startTime);
-      return t >= fromDate && t <= toDate;
-    });
-
-    if (filtered.length === 0) {
-      showAdminMsg('所選日期範圍內沒有預約記錄。', 'error');
-      return;
-    }
-
-    const exportData = filtered.map(b => ({
-      '預約日期': new Date(b.startTime).toLocaleDateString('zh-HK'),
-      '開始時間': new Date(b.startTime).toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit'}),
-      '結束時間': new Date(b.endTime).toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit'}),
-      '會員號碼': b.memberId || b.memberid || '',
-      '來源': b.source || ''
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, '預約記錄');
-    XLSX.writeFile(workbook, 'PartyRoom_預約紀錄_' + from + '_至_' + to + '.xlsx');
+  if (!from || !to) {
+    showAdminMsg('請選擇開始及結束日期。', 'error');
+    return;
   }
+
+  if (to < from) {
+    showAdminMsg('結束日期不能早於開始日期。', 'error');
+    return;
+  }
+
+  const fromDate = new Date(from);
+  const toDate = new Date(to + 'T23:59:59');
+  const filtered = allBookings.filter(b => {
+    const t = new Date(b.startTime);
+    return t >= fromDate && t <= toDate;
+  });
+
+  if (filtered.length === 0) {
+    showAdminMsg('所選日期範圍內沒有預約記錄。', 'error');
+    return;
+  }
+
+  const exportData = filtered.map(b => ({
+    '預約日期': new Date(b.startTime).toLocaleDateString('zh-HK'),
+    '開始時間': new Date(b.startTime).toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit'}),
+    '結束時間': new Date(b.endTime).toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit'}),
+    '會員號碼': b.memberId || b.memberid || '',
+    '來源': b.source || ''
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(exportData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, '預約記錄');
+  XLSX.writeFile(workbook, 'PartyRoom_預約紀錄_' + from + '_至_' + to + '.xlsx');
+}
 
   function showAdminMsg(text, type) {
     const msg = document.getElementById('adminMsg');
