@@ -178,26 +178,26 @@
 
     <div style="margin-bottom: 14px;">
       <label>重複星期</label>
-<div style="display: flex; gap: 16px; padding: 6px 0; flex-wrap: wrap;">
-  <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
-    <input type="checkbox" class="batch-day" value="2" checked style="width: auto; margin: 0;"> 星期二
-  </label>
-  <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
-    <input type="checkbox" class="batch-day" value="3" checked style="width: auto; margin: 0;"> 星期三
-  </label>
-  <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
-    <input type="checkbox" class="batch-day" value="4" checked style="width: auto; margin: 0;"> 星期四
-  </label>
-  <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
-    <input type="checkbox" class="batch-day" value="5" checked style="width: auto; margin: 0;"> 星期五
-  </label>
-  <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
-    <input type="checkbox" class="batch-day" value="6" checked style="width: auto; margin: 0;"> 星期六
-  </label>
-  <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
-    <input type="checkbox" class="batch-day" value="0" checked style="width: auto; margin: 0;"> 星期日
-  </label>
-</div>
+      <div style="display: flex; gap: 16px; padding: 6px 0; flex-wrap: wrap;">
+        <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
+          <input type="checkbox" class="batch-day" value="2" style="width: auto; margin: 0;"> 星期二
+        </label>
+        <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
+          <input type="checkbox" class="batch-day" value="3" style="width: auto; margin: 0;"> 星期三
+        </label>
+        <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
+          <input type="checkbox" class="batch-day" value="4" style="width: auto; margin: 0;"> 星期四
+        </label>
+        <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
+          <input type="checkbox" class="batch-day" value="5" style="width: auto; margin: 0;"> 星期五
+        </label>
+        <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
+          <input type="checkbox" class="batch-day" value="6" style="width: auto; margin: 0;"> 星期六
+        </label>
+        <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
+          <input type="checkbox" class="batch-day" value="0" style="width: auto; margin: 0;"> 星期日
+        </label>
+      </div>
     </div>
 
     <div class="row">
@@ -243,15 +243,16 @@
 <script>
   const WORKER_URL = "https://room17booking.voicebgit.workers.dev/";
   const ADMIN_KEY = "BGIT24148283";
-// 修改 1: 補全星期二至日 (0=日, 2=二, 3=三, 4=四, 5=五, 6=六)
-const HOURS_BY_DAY = {
-  2: { start: 14, end: 22 }, // 星期二
-  3: { start: 14, end: 22 }, // 星期三
-  4: { start: 14, end: 22 }, // 星期四
-  5: { start: 14, end: 22 }, // 星期五
-  6: { start: 11, end: 22 }, // 星期六
-  0: { start: 11, end: 18 }  // 星期日
-};
+
+  // 星期幾對應的營業時間 (0=日, 2=二, 3=三, 4=四, 5=五, 6=六)
+  const HOURS_BY_DAY = {
+    2: { start: 14, end: 22 }, // 星期二
+    3: { start: 14, end: 22 }, // 星期三
+    4: { start: 14, end: 22 }, // 星期四
+    5: { start: 14, end: 22 }, // 星期五
+    6: { start: 11, end: 22 }, // 星期六
+    0: { start: 11, end: 18 }  // 星期日
+  };
 
   let allBookings = [];
   let adminHeaders = { "Content-Type": "application/json", "X-Admin-Key": ADMIN_KEY };
@@ -293,7 +294,6 @@ const HOURS_BY_DAY = {
       allBookings = json.data || [];
       renderTable(allBookings);
       document.getElementById('bookingCount').textContent = '共 ' + allBookings.length + ' 筆';
-      renderInternalCalendar();
     } catch (e) {
       document.getElementById('bookingBody').innerHTML =
         '<tr><td colspan="6" class="loading">載入失敗，請重新整理。</td></tr>';
@@ -306,7 +306,7 @@ const HOURS_BY_DAY = {
     renderTable(allBookings);
   }
 
-function renderTable(data) {
+  function renderTable(data) {
     const filterFrom = document.getElementById('filterFrom').value;
     const filterTo = document.getElementById('filterTo').value;
     const now = new Date();
@@ -314,7 +314,6 @@ function renderTable(data) {
 
     let filtered = data;
 
-    // 若使用者沒有設定篩選條件，預設只顯示「未完結」的預約；若有設定篩選日期，則允許查看歷史紀錄
     if (filterFrom || filterTo) {
       filtered = data.filter(b => {
         const d = formatDate(new Date(b.startTime));
@@ -398,7 +397,6 @@ function renderTable(data) {
     }
   }
 
-  // 內部日曆修復：切換月份時清空選擇區域
   function changeInternalMonth(dir) {
     internalMonth += dir;
     if (internalMonth > 11) { internalMonth = 0; internalYear++; }
@@ -438,7 +436,7 @@ function renderTable(data) {
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(internalYear, internalMonth, d);
       const dow = date.getDay();
-      const isAvail = dow !== 1;
+      const isAvail = Boolean(HOURS_BY_DAY[dow]);
       const isPast = date < today;
       const dateStr = formatDate(date);
       const cell = document.createElement('div');
@@ -451,6 +449,7 @@ function renderTable(data) {
         cell.onclick = () => selectInternalDate(date, dow, dateStr, cell);
       } else {
         cell.style.color = '#444';
+        cell.classList.add('past');
       }
       grid.appendChild(cell);
     }
@@ -475,13 +474,10 @@ function renderTable(data) {
     renderInternalSlots();
   }
 
-  // 內部日曆修復：安全解析日期字串，確保星期幾（dow）精確算對
   function renderInternalSlots() {
     if (!internalSelectedDate) return;
 
     const duration = parseInt(document.getElementById('internalDuration').value);
-    
-    // 將 YYYY-MM-DD 切割轉為數字，規避跨時區字串解析 Bug
     const [y, m, d] = internalSelectedDate.split('-').map(Number);
     const date = new Date(y, m - 1, d);
     const dow = date.getDay();
@@ -540,7 +536,7 @@ function renderTable(data) {
       '🔒 確認扣起 ' + internalSelectedDate + ' ' + startH + ':00-' + endH + ':00';
   }
 
-async function submitInternal() {
+  async function submitInternal() {
     if (!internalSelectedDate || internalSelectedStart === null) {
       showInternalMsg('請先選擇日期及時段。', 'error');
       return;
@@ -549,7 +545,6 @@ async function submitInternal() {
     const duration = parseInt(document.getElementById('internalDuration').value);
     const note = document.getElementById('internalNote').value.trim() || '內部';
     
-    // 正確組合 HKT (UTC+8) 的 ISO 時間字串，避免 toISOString() 造成的 8 小時偏差
     const startHStr = String(internalSelectedStart).padStart(2, '0');
     const endHStr = String(internalSelectedStart + duration).padStart(2, '0');
     
@@ -590,6 +585,7 @@ async function submitInternal() {
       showInternalMsg('網絡錯誤，請稍後再試。', 'error');
     }
   }
+
   function exportExcel() {
     const from = document.getElementById('exportFrom').value;
     const to = document.getElementById('exportTo').value;
