@@ -59,83 +59,30 @@
     .rules-booking-info strong { color: #3498db; }
     .rules-back-btn { width: 100%; padding: 16px; background: #3498db; color: white; border: none; border-radius: 10px; font-size: 1.05rem; cursor: pointer; font-weight: 700; transition: background 0.2s; box-shadow: 0 4px 12px rgba(52,152,219,0.4); }
     .rules-back-btn:hover { background: #2980b9; }
+
     /* 條款勾選區塊修正 */
-.terms-group {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin: 18px 0;
-  font-size: 0.9rem;
-  color: #555;
-}
+    .terms-group { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 18px 0; font-size: 0.9rem; color: #555; }
+    .terms-group input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; accent-color: #3498db; }
+    .terms-group label { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; margin: 0; color: #333; }
+    .terms-group a { color: #2980b9; text-decoration: underline; }
 
-.terms-group input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  cursor: pointer;
-  accent-color: #3498db; /* 勾選框主題色 */
-}
-
-.terms-group label {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-  margin: 0;
-  color: #333;
-}
-
-.terms-group a {
-  color: #2980b9;
-  text-decoration: underline;
-}
     /* Modal 彈窗樣式 */
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 1000;
-}
-.modal-card {
-  background: #ffffff;
-  border-radius: 12px;
-  width: 90%; max-width: 500px;
-  max-height: 80vh;
-  display: flex; flex-direction: column;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  overflow: hidden;
-  color: #333;
-}
-.modal-header {
-  padding: 16px 20px;
-  background: #f8f9fa;
-  border-bottom: 1px solid #eee;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.modal-header h3 { font-size: 1.1rem; color: #2c3e50; margin: 0; }
-.close-btn { font-size: 1.5rem; cursor: pointer; color: #aaa; }
-.close-btn:hover { color: #333; }
-.modal-body {
-  padding: 20px;
-  overflow-y: auto;
-  font-size: 0.9rem;
-  line-height: 1.6;
-}
-.modal-body h4 { margin: 12px 0 6px 0; color: #e74c3c; }
-.modal-body ul { padding-left: 20px; margin-bottom: 10px; }
-.modal-footer {
-  padding: 12px 20px;
-  background: #f8f9fa;
-  border-top: 1px solid #eee;
-  text-align: right;
-}
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-card { background: #ffffff; border-radius: 12px; width: 90%; max-width: 500px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; color: #333; }
+    .modal-header { padding: 16px 20px; background: #f8f9fa; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h3 { font-size: 1.1rem; color: #2c3e50; margin: 0; }
+    .close-btn { font-size: 1.5rem; cursor: pointer; color: #aaa; }
+    .close-btn:hover { color: #333; }
+    .modal-body { padding: 20px; overflow-y: auto; font-size: 0.88rem; line-height: 1.6; }
+    .modal-body h4 { margin: 12px 0 6px 0; color: #e74c3c; }
+    .modal-body ol { padding-left: 20px; margin-bottom: 10px; }
+    .modal-body li { margin-bottom: 6px; }
+    .modal-footer { padding: 12px 20px; background: #f8f9fa; border-top: 1px solid #eee; text-align: right; }
   </style>
 </head>
 <body>
 
+<!-- 預約成功顯示頁面 -->
 <div id="rulesOverlay" class="rules-overlay">
   <div class="rules-inner">
     <div class="rules-success-badge" id="overlayBadge">✅ 預約成功！</div>
@@ -243,52 +190,52 @@
     <div id="t-memberLabel" style="margin-bottom:6px; font-size:0.9rem; font-weight:600; color:#555;">會員號碼 *</div>
     <input type="number" id="memberId" placeholder="請輸入會員號碼 / Enter member number" maxlength="18" style="margin-bottom:16px;">
 
-<div class="terms-group">
-  <input type="checkbox" id="agreeTerms" required>
-  <label for="agreeTerms">
-    我已閱讀並同意
-    <a href="#" onclick="openModal(); return false;">《房間使用規則及免責聲明》</a>
-  </label>
-</div>
+    <div class="terms-group">
+      <input type="checkbox" id="agreeTerms" required>
+      <label for="agreeTerms">
+        我已閱讀並同意
+        <a href="#" onclick="openModal(); return false;">《房間使用規則及免責聲明》</a>
+      </label>
+    </div>
 
     <button class="btn" id="submitBtn" onclick="submitBooking()">確認預約 / Confirm Booking</button>
   </div>
 </div>
 
-<div id="termsModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-  <div style="background:#fff; margin:10% auto; padding:20px; width:80%; max-width:500px; border-radius:8px; position:relative; color:#333;">
-    <span id="closeTermsBtn" style="position:absolute; right:15px; top:10px; font-size:24px; cursor:pointer;">&times;</span>
-    <h3 style="margin-bottom: 12px; color: #2c3e50;">房間使用規則及免責聲明</h3>
-    <div style="max-height: 300px; overflow-y: auto; text-align: left; margin-top: 10px; line-height: 1.6; font-size: 0.9rem;">
-      <p>1. 使用房間請保持整潔，使用完畢後請將物品歸位。</p>
-      <p>2. 嚴禁在房內進行任何違法或危險活動。</p>
-      <p>3. 中心對個人物品之遺失或損壞概不負責。</p>
-      <p>4. 若因不可抗力因素，中心保留取消預約之最終權利。</p>
+<!-- 條款彈窗 -->
+<div id="termsModal" class="modal-overlay" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>📜 房間使用規則及免責聲明</h3>
+      <span class="close-btn" onclick="closeModal()">&times;</span>
     </div>
-    <button id="modalAgreeBtn" style="margin-top:15px; width:100%; padding:10px; background:#27ae60; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:600;">我已明白並同意</button>
+    <div class="modal-body">
+      <h4>【使用規則】</h4>
+      <ol>
+        <li>房間由平行心間贊助建設，請確保使用者均已成為 'TO_MO by 21C@JC app' 會員 (可於 App Store 或 Play Store 中下載)。</li>
+        <li>本房間「只」可提供予「12~24歲」的服務對象使用。</li>
+        <li>使用房間時請保持整潔，使用完畢後請將物品歸位，否則有機會被要求進行「中心服務令」，如情況嚴重或會被黑名單。</li>
+        <li>嚴禁在房內進行任何違法、商業活動，房間內不予吸煙及進食味道濃烈的食物。</li>
+        <li>請於預約時段結束前完成清理並離場，避免影響下一位使用者。</li>
+      </ol>
+      
+      <h4>【免責聲明】</h4>
+      <ol>
+        <li>本中心對個人物品之遺失或損壞概不負責，請自行妥善保管。</li>
+        <li>如房間物品因個人使用不當而致遺失或損壞，中心可要求使用者進行「中心服務令」或要求賠償，請各位珍惜使用中心物品。</li>
+        <li>若因不可抗力因素（如惡劣天氣或緊急維修），本中心保留取消或調整預約之最終權利。</li>
+        <li>如按下「明白」則視為明白及會遵守所有房間使用規則，如有違反中心保留所有最終權利。</li>
+      </ol>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn" onclick="closeModal()" style="width: 100%; background:#27ae60;">
+        我已明白並關閉
+      </button>
+    </div>
   </div>
 </div>
 
 <script>
-  // 打開彈窗
-function openModal() {
-  document.getElementById('termsModal').style.display = 'flex';
-}
-
-// 關閉彈窗
-function closeModal() {
-  document.getElementById('termsModal').style.display = 'none';
-}
-
-// 點擊彈窗外部背景關閉
-window.onclick = function(event) {
-  const modal = document.getElementById('termsModal');
-  if (event.target === modal) {
-    closeModal();
-  }
-};
-  
-  // ⚠️ 請修改為你真實部署後的 Cloudflare Worker URL
   const WORKER_URL = "https://room17booking.voicebgit.workers.dev/"; 
   const MAX_BOOKINGS = 3;
   const MAX_HOURS = 6;
@@ -319,28 +266,24 @@ window.onclick = function(event) {
   };
 
   document.addEventListener("DOMContentLoaded", function() {
-    initModal();
     renderCalendar();
     loadBookings();
   });
 
-  function initModal() {
-    const modal = document.getElementById("termsModal");
-    const openBtn = document.getElementById("openTermsLink");
-    const closeBtn = document.getElementById("closeTermsBtn");
-    const modalAgreeBtn = document.getElementById("modalAgreeBtn");
-    const checkbox = document.getElementById("agreeTermsCheckbox");
-
-    if (openBtn) openBtn.onclick = () => modal.style.display = "block";
-    if (closeBtn) closeBtn.onclick = () => modal.style.display = "none";
-    window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
-    if (modalAgreeBtn) {
-      modalAgreeBtn.onclick = () => {
-        checkbox.checked = true;
-        modal.style.display = "none";
-      };
-    }
+  function openModal() {
+    document.getElementById('termsModal').style.display = 'flex';
   }
+
+  function closeModal() {
+    document.getElementById('termsModal').style.display = 'none';
+  }
+
+  window.addEventListener('click', function(event) {
+    const modal = document.getElementById('termsModal');
+    if (event.target === modal) {
+      closeModal();
+    }
+  });
 
   async function loadBookings() {
     try {
@@ -473,36 +416,18 @@ window.onclick = function(event) {
     });
     return { count: userBookings.length, totalHours };
   }
-async function submitBooking() {
-  const agreeTerms = document.getElementById('agreeTerms');
 
-  // 1. 檢查使用者是否已手動勾選條款
-  if (!agreeTerms || !agreeTerms.checked) {
-    alert('請先閱讀並勾選同意《房間使用規則及免責聲明》後再提交預約。');
-    // 如果有訊息顯示元件，也可改用 showMsg('請先勾選同意條款', 'error');
-    return; // 中斷提交程序
-  }
-
-  // 2. 繼續原本的會員號碼驗證與 API 送出邏輯...
-  const memberId = document.getElementById('memberId').value.trim();
-  if (!memberId) {
-    alert('請輸入會員號碼');
-    return;
-  }
-
-  // ...執行 fetch(WORKER_URL, { method: 'POST', ... }) ...
-}
-  
   async function submitBooking() {
     const t = T[lang];
     const memberId = document.getElementById('memberId').value.trim();
-    const checkbox = document.getElementById('agreeTermsCheckbox');
+    const agreeTerms = document.getElementById('agreeTerms');
 
-    if (!memberId) { showMsg(t.errMember, 'error'); return; }
-    if (!checkbox.checked) {
-      showMsg(lang === 'zh' ? '請先閱讀並勾選同意免責聲明。' : 'Please read and agree to terms.', 'error');
+    if (!agreeTerms || !agreeTerms.checked) {
+      showMsg(lang === 'zh' ? '請先閱讀並勾選同意《房間使用規則及免責聲明》。' : 'Please agree to terms before booking.', 'error');
       return;
     }
+
+    if (!memberId) { showMsg(t.errMember, 'error'); return; }
     if (!selectedDate || selectedStart === null) { showMsg(t.errSelect, 'error'); return; }
 
     const duration = parseInt(document.getElementById('duration').value);
@@ -569,7 +494,7 @@ async function submitBooking() {
     selectedStart = null;
     document.getElementById('slotCard').style.display = 'none';
     document.getElementById('formCard').style.display = 'none';
-    document.getElementById('agreeTermsCheckbox').checked = false;
+    document.getElementById('agreeTerms').checked = false;
     document.getElementById('memberId').value = '';
     renderCalendar();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -606,38 +531,5 @@ async function submitBooking() {
     renderCalendar();
   }
 </script>
-<!-- 免責聲明及規則彈窗 -->
-<div id="termsModal" class="modal-overlay" style="display:none;">
-  <div class="modal-card">
-    <div class="modal-header">
-      <h3>📜 房間使用規則及免責聲明</h3>
-      <span class="close-btn" onclick="closeModal()">&times;</span>
-    </div>
-    <div class="modal-body">
-      <h4>【使用規則】</h4>
-      <ol>
-        <li>房間由平行心間贊助建設，請確保使用者均已成為'TO_MO by 21C@JC app'會員(可於app store或play store中下載)。</li>
-        <li>本房間'只'可提供予'12~24歲'的服務對象使用。</li>
-        <li>使用房間時請保持整潔，使用完畢後請將物品歸位，否則有機會被要求進行'中心服務令'，如情況嚴重或會被黑名單。</li>
-        <li>嚴禁在房內進行任何違法、商業活動，房間內不予吸煙及進食味道濃烈的食物。</li>
-        <li>請於預約時段結束前完成清理並離場，避免影響下一位使用者。</li>
-      </ol>
-      
-      <h4>【免責聲明】</h4>
-      <ol>
-        <li>本中心對個人物品之遺失或損壞概不負責，請自行妥善保管。</li>
-        <li>如房間物品因個人使用不當而致遺失或損壞，中心可要求使用者進行'中心服務令'或要求賠償，請各位珍惜使用中心物品。</li>
-        <li>若因不可抗力因素（如惡劣天氣或緊急維修），本中心保留取消或調整預約之最終權利。</li>
-        <li>如按下'明白'則視為明白及會遵守所有房間使用規則，如有違反中心保留所有最終權利。</li>
-      </ol>
-    </div>
-    <div class="modal-footer">
-      <!-- 修正點：加上 onclick="closeModal()" 確保按鈕可正常關閉彈窗 -->
-      <button type="button" class="btn btn-green" onclick="closeModal()" style="width: 100%; padding: 12px; font-size: 1rem;">
-        我已明白並關閉
-      </button>
-    </div>
-  </div>
-</div>
 </body>
 </html>
