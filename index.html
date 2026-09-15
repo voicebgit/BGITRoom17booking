@@ -91,6 +91,47 @@
   color: #2980b9;
   text-decoration: underline;
 }
+    /* Modal 彈窗樣式 */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.modal-card {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 90%; max-width: 500px;
+  max-height: 80vh;
+  display: flex; flex-direction: column;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  overflow: hidden;
+  color: #333;
+}
+.modal-header {
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.modal-header h3 { font-size: 1.1rem; color: #2c3e50; margin: 0; }
+.close-btn { font-size: 1.5rem; cursor: pointer; color: #aaa; }
+.close-btn:hover { color: #333; }
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.modal-body h4 { margin: 12px 0 6px 0; color: #e74c3c; }
+.modal-body ul { padding-left: 20px; margin-bottom: 10px; }
+.modal-footer {
+  padding: 12px 20px;
+  background: #f8f9fa;
+  border-top: 1px solid #eee;
+  text-align: right;
+}
   </style>
 </head>
 <body>
@@ -229,6 +270,24 @@
 </div>
 
 <script>
+  // 打開彈窗
+function openModal() {
+  document.getElementById('termsModal').style.display = 'flex';
+}
+
+// 關閉彈窗
+function closeModal() {
+  document.getElementById('termsModal').style.display = 'none';
+}
+
+// 點擊彈窗外部背景關閉
+window.onclick = function(event) {
+  const modal = document.getElementById('termsModal');
+  if (event.target === modal) {
+    closeModal();
+  }
+};
+  
   // ⚠️ 請修改為你真實部署後的 Cloudflare Worker URL
   const WORKER_URL = "https://room17booking.voicebgit.workers.dev/"; 
   const MAX_BOOKINGS = 3;
@@ -414,7 +473,26 @@
     });
     return { count: userBookings.length, totalHours };
   }
+async function submitBooking() {
+  const agreeTerms = document.getElementById('agreeTerms');
 
+  // 1. 檢查使用者是否已手動勾選條款
+  if (!agreeTerms || !agreeTerms.checked) {
+    alert('請先閱讀並勾選同意《房間使用規則及免責聲明》後再提交預約。');
+    // 如果有訊息顯示元件，也可改用 showMsg('請先勾選同意條款', 'error');
+    return; // 中斷提交程序
+  }
+
+  // 2. 繼續原本的會員號碼驗證與 API 送出邏輯...
+  const memberId = document.getElementById('memberId').value.trim();
+  if (!memberId) {
+    alert('請輸入會員號碼');
+    return;
+  }
+
+  // ...執行 fetch(WORKER_URL, { method: 'POST', ... }) ...
+}
+  
   async function submitBooking() {
     const t = T[lang];
     const memberId = document.getElementById('memberId').value.trim();
@@ -528,5 +606,34 @@
     renderCalendar();
   }
 </script>
+<!-- 免責聲明及規則彈窗 -->
+<div id="termsModal" class="modal-overlay" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>📜 房間使用規則及免責聲明</h3>
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <h4>【使用規則】</h4>
+      <ul>
+        <li>請愛惜場內設施及桌遊，如有損壞或遺失需照價賠償。</li>
+        <li>場內嚴禁吸煙、賭博及任何違法行為。</li>
+        <li>請於預約時間結束前完成清理並離場，超時將收取額外費用。</li>
+        <li>請保持環境清潔，垃圾請分類棄置。</li>
+      </ul>
+      
+      <h4>【免責聲明】</h4>
+      <ul>
+        <li>本場地僅提供場地及設備租借，使用者須自行妥善保管個人財物，如有遺失本中心概不負責。</li>
+        <li>使用者於場內活動時應注意個人安全，如因人為疏忽導致受傷，本中心不承擔法律責任。</li>
+        <li>如遇不可抗力因素（如颱風、暴雨或系統維護），本中心保留取消或調整預約之最終決定權。</li>
+      </ul>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-blue" onclick="closeModal()">了解並關閉</button>
+    </div>
+  </div>
+</div>
+  
 </body>
 </html>
