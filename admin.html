@@ -293,7 +293,7 @@
     renderTable(allBookings);
   }
 
-  function renderTable(data) {
+function renderTable(data) {
     const filterFrom = document.getElementById('filterFrom').value;
     const filterTo = document.getElementById('filterTo').value;
     const now = new Date();
@@ -301,6 +301,7 @@
 
     let filtered = data;
 
+    // 若使用者沒有設定篩選條件，預設只顯示「未完結」的預約；若有設定篩選日期，則允許查看歷史紀錄
     if (filterFrom || filterTo) {
       filtered = data.filter(b => {
         const d = formatDate(new Date(b.startTime));
@@ -308,14 +309,14 @@
         if (filterTo && d > filterTo) return false;
         return true;
       });
+    } else {
+      filtered = filtered.filter(b => new Date(b.endTime) > now);
     }
-
-    filtered = filtered.filter(b => new Date(b.endTime) > now);
 
     if (filtered.length === 0) {
       tbody.innerHTML =
         '<tr><td colspan="6" class="loading">' +
-        ((filterFrom || filterTo) ? '所選日期範圍內沒有未完結的預約記錄。' : '暫無未完結的預約記錄。') +
+        ((filterFrom || filterTo) ? '所選日期範圍內沒有預約記錄。' : '暫無未完結的預約記錄。') +
         '</td></tr>';
       return;
     }
@@ -341,9 +342,9 @@
         year:'numeric', month:'2-digit', day:'2-digit', weekday:'short'
       });
       const timeStr =
-        start.toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit'}) +
+        start.toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit', hour12: false}) +
         ' - ' +
-        end.toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit'});
+        end.toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit', hour12: false});
 
       return (
         '<tr>' +
@@ -526,7 +527,7 @@
       '🔒 確認扣起 ' + internalSelectedDate + ' ' + startH + ':00-' + endH + ':00';
   }
 
-  async function submitInternal() {
+async function submitInternal() {
     if (!internalSelectedDate || internalSelectedStart === null) {
       showInternalMsg('請先選擇日期及時段。', 'error');
       return;
@@ -535,11 +536,14 @@
     const duration = parseInt(document.getElementById('internalDuration').value);
     const note = document.getElementById('internalNote').value.trim() || '內部';
     
-    const [y, m, d] = internalSelectedDate.split('-').map(Number);
-    const startTime = new Date(y, m - 1, d, internalSelectedStart, 0, 0);
-    const endTime = new Date(startTime.getTime() + duration * 3600000);
+    // 正確組合 HKT (UTC+8) 的 ISO 時間字串，避免 toISOString() 造成的 8 小時偏差
+    const startHStr = String(internalSelectedStart).padStart(2, '0');
+    const endHStr = String(internalSelectedStart + duration).padStart(2, '0');
+    
+    const startISO = new Date(`${internalSelectedDate}T${startHStr}:00:00+08:00`).toISOString();
+    const endISO = new Date(`${internalSelectedDate}T${endHStr}:00:00+08:00`).toISOString();
 
-    if (endTime <= new Date()) {
+    if (new Date(endISO) <= new Date()) {
       renderInternalSlots();
       showInternalMsg('抱歉，你選擇的時段已經完結，請重新選擇。', 'error');
       return;
@@ -551,8 +555,8 @@
         headers: adminHeaders,
         body: JSON.stringify({
           memberId: note,
-          startTime: startTime.toISOString(),
-          endTime: endTime.toISOString(),
+          startTime: startISO,
+          endTime: endISO,
           source: '內部'
         })
       });
@@ -573,7 +577,6 @@
       showInternalMsg('網絡錯誤，請稍後再試。', 'error');
     }
   }
-
   function exportExcel() {
     const from = document.getElementById('exportFrom').value;
     const to = document.getElementById('exportTo').value;
