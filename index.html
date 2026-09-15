@@ -198,7 +198,7 @@
 
 <script>
   // ⚠️ 請修改為你真實部署後的 Cloudflare Worker URL
-  const WORKER_URL = "https://bg-partyroom-worker.your-subdomain.workers.dev"; 
+  const WORKER_URL = "https://room17booking.voicebgit.workers.dev/"; 
   const MAX_BOOKINGS = 3;
   const MAX_HOURS = 6;
   
@@ -255,7 +255,8 @@
     try {
       const res = await fetch(WORKER_URL);
       if (res.ok) {
-        existingBookings = await res.json();
+        const json = await res.json();
+        existingBookings = json.data || [];
         renderCalendar();
       }
     } catch (e) {
@@ -401,7 +402,6 @@
       return;
     }
 
-    // 正確的香港時區 (+08:00) ISO 字串構建，避免 UTC 偏差
     const startStr = String(selectedStart).padStart(2, '0');
     const endStr = String(selectedStart + duration).padStart(2, '0');
     const startTimeISO = `${selectedDate}T${startStr}:00:00+08:00`;
