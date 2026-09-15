@@ -34,15 +34,15 @@
     td { padding: 10px 12px; border-bottom: 1px solid #1e2a45; vertical-align: middle; }
     tr:hover td { background: #1e2a45; }
     .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; }
-    .badge-public { background: #2ecc7133; color: #2ecc71; }
-    .badge-internal { background: #e74c3c33; color: #e74c3c; }
-    .badge-upcoming { background: #f39c1233; color: #f39c12; }
-    .badge-past { background: #55555533; color: #888; }
+    .badge-public { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+    .badge-internal { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+    .badge-upcoming { background: rgba(243, 156, 18, 0.2); color: #f39c12; }
+    .badge-past { background: rgba(85, 85, 85, 0.2); color: #888; }
     .export-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
     .export-row > div { flex: 1; min-width: 160px; }
     .msg { padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; font-size: 0.88rem; display: none; }
-    .msg.success { background: #27ae6033; color: #2ecc71; display: block; }
-    .msg.error { background: #e74c3c33; color: #e74c3c; display: block; }
+    .msg.success { background: rgba(39, 174, 96, 0.2); color: #2ecc71; display: block; }
+    .msg.error { background: rgba(231, 76, 60, 0.2); color: #e74c3c; display: block; }
     .loading { text-align: center; color: #777; padding: 20px; }
     .tag-count { font-size: 0.82rem; color: #aaa; margin-left: 8px; }
     #logoutBtn { float: right; margin-top: -4px; background: transparent; border: 1px solid #e74c3c; color: #e74c3c; font-size: 0.8rem; padding: 4px 12px; border-radius: 6px; cursor: pointer; }
@@ -53,7 +53,7 @@
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
     .cal-header { font-size: 0.78rem; font-weight: 700; color: #666; padding: 4px 0; }
     .cal-day { padding: 8px 4px; border-radius: 8px; font-size: 0.9rem; cursor: default; min-height: 36px; display: flex; align-items: center; justify-content: center; }
-    .cal-day.available { background: #0f346099; color: #5dade2; cursor: pointer; font-weight: 600; border: 1px solid #2980b9; }
+    .cal-day.available { background: rgba(15, 52, 96, 0.6); color: #5dade2; cursor: pointer; font-weight: 600; border: 1px solid #2980b9; }
     .cal-day.available:hover { background: #2980b9; color: white; }
     .cal-day.selected-cal { background: #e74c3c; color: white; font-weight: 700; }
     .cal-day.past { color: #444; }
@@ -62,7 +62,7 @@
     .slot-btn-admin { padding: 10px 6px; border: 2px solid #333; border-radius: 8px; background: #0f3460; color: #eee; font-size: 0.85rem; cursor: pointer; text-align: center; transition: all 0.15s; }
     .slot-btn-admin:hover:not(.taken) { border-color: #e74c3c; color: #e74c3c; }
     .slot-btn-admin.selected-slot { border-color: #e74c3c; background: #e74c3c; color: white; font-weight: 700; }
-    .slot-btn-admin.taken { background: #2ecc7122; border-color: #2ecc7155; color: #2ecc71; cursor: not-allowed; font-size: 0.75rem; }
+    .slot-btn-admin.taken { background: rgba(46, 204, 113, 0.13); border-color: rgba(46, 204, 113, 0.33); color: #2ecc71; cursor: not-allowed; font-size: 0.75rem; }
     .selected-info { background: #0f3460; border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; font-size: 0.9rem; color: #aaa; }
     .selected-info strong { color: #5dade2; }
   </style>
@@ -76,8 +76,8 @@
 <div id="loginScreen">
   <h2>同事登入</h2>
   <div id="loginMsg" class="msg"></div>
-  <label>管理密鑰</label>
-  <input type="password" id="adminKey" placeholder="請輸入管理密鑰" onkeydown="if(event.key==='Enter') doLogin()">
+  <label for="adminKey">管理密鑰</label>
+  <input type="password" id="adminKey" placeholder="請輸入管理密鑰">
   <button class="btn btn-red" onclick="doLogin()">登入</button>
 </div>
 
@@ -91,14 +91,14 @@
     </h2>
     <div id="adminMsg" class="msg"></div>
     <div class="row" style="margin-bottom:14px">
-<div>
-  <label>開始日期</label>
-  <input type="date" id="filterFrom" onchange="renderTable(allBookings)">
-</div>
-<div>
-  <label>結束日期</label>
-  <input type="date" id="filterTo" onchange="renderTable(allBookings)">
-</div>
+      <div>
+        <label for="filterFrom">開始日期</label>
+        <input type="date" id="filterFrom" onchange="renderTable(allBookings)">
+      </div>
+      <div>
+        <label for="filterTo">結束日期</label>
+        <input type="date" id="filterTo" onchange="renderTable(allBookings)">
+      </div>
       <div style="display:flex;align-items:flex-end;padding-bottom:14px">
         <button class="btn btn-blue" onclick="clearFilter()">清除篩選</button>
         &nbsp;
@@ -143,14 +143,14 @@
       <div id="internalDateInfo" class="selected-info"></div>
       <div class="row">
         <div>
-          <label>使用時數</label>
+          <label for="internalDuration">使用時數</label>
           <select id="internalDuration" onchange="renderInternalSlots()">
             <option value="1">1 小時</option>
             <option value="2" selected>2 小時</option>
           </select>
         </div>
         <div>
-          <label>備註（顯示為會員號碼欄）</label>
+          <label for="internalNote">備註（顯示為會員號碼欄）</label>
           <input type="text" id="internalNote" placeholder="例：清潔、維修、活動...">
         </div>
       </div>
@@ -167,11 +167,11 @@
     
     <div class="row">
       <div>
-        <label>開始日期</label>
+        <label for="batchFrom">開始日期</label>
         <input type="date" id="batchFrom">
       </div>
       <div>
-        <label>結束日期</label>
+        <label for="batchTo">結束日期</label>
         <input type="date" id="batchTo">
       </div>
     </div>
@@ -193,17 +193,17 @@
 
     <div class="row">
       <div>
-        <label>每日開始時間</label>
+        <label for="batchStartTime">每日開始時間</label>
         <input type="time" id="batchStartTime" value="09:00">
       </div>
       <div>
-        <label>每日結束時間</label>
+        <label for="batchEndTime">每日結束時間</label>
         <input type="time" id="batchEndTime" value="18:00">
       </div>
     </div>
 
     <div>
-      <label>扣起原因 / 備註</label>
+      <label for="batchNote">扣起原因 / 備註</label>
       <input type="text" id="batchNote" value="內部保養" placeholder="例：維護、中心例行保養">
     </div>
 
@@ -217,11 +217,11 @@
     <h2>📊 匯出預約記錄</h2>
     <div class="export-row">
       <div>
-        <label>開始日期</label>
+        <label for="exportFrom">開始日期</label>
         <input type="date" id="exportFrom">
       </div>
       <div>
-        <label>結束日期</label>
+        <label for="exportTo">結束日期</label>
         <input type="date" id="exportTo">
       </div>
       <div style="padding-bottom:14px">
@@ -244,7 +244,12 @@
   let adminHeaders = { "Content-Type": "application/json", "X-Admin-Key": ADMIN_KEY };
   let internalYear, internalMonth, internalSelectedDate = null, internalSelectedStart = null;
 
-  // 登入/登出
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('adminKey').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doLogin();
+    });
+  });
+
   function doLogin() {
     const key = document.getElementById('adminKey').value.trim();
     if (key === ADMIN_KEY) {
@@ -268,7 +273,6 @@
     document.getElementById('adminKey').value = '';
   }
 
-  // 載入預約
   async function loadBookings() {
     try {
       const res = await fetch(WORKER_URL, { headers: adminHeaders });
@@ -283,33 +287,30 @@
     }
   }
 
-function clearFilter() {
-  document.getElementById('filterFrom').value = '';
-  document.getElementById('filterTo').value = '';
-  renderTable(allBookings);
-}
+  function clearFilter() {
+    document.getElementById('filterFrom').value = '';
+    document.getElementById('filterTo').value = '';
+    renderTable(allBookings);
+  }
 
-  // 顯示預約列表
   function renderTable(data) {
-const filterFrom = document.getElementById('filterFrom').value;
-const filterTo = document.getElementById('filterTo').value;
+    const filterFrom = document.getElementById('filterFrom').value;
+    const filterTo = document.getElementById('filterTo').value;
     const now = new Date();
     const tbody = document.getElementById('bookingBody');
 
-let filtered = data;
+    let filtered = data;
 
-// 日期範圍篩選
-if (filterFrom || filterTo) {
-  filtered = data.filter(b => {
-    const d = formatDate(new Date(b.startTime));
-    if (filterFrom && d < filterFrom) return false;
-    if (filterTo && d > filterTo) return false;
-    return true;
-  });
-}
+    if (filterFrom || filterTo) {
+      filtered = data.filter(b => {
+        const d = formatDate(new Date(b.startTime));
+        if (filterFrom && d < filterFrom) return false;
+        if (filterTo && d > filterTo) return false;
+        return true;
+      });
+    }
 
-// 列表只顯示未完結的預約，匯出 Excel 仍保留全部記錄
-filtered = filtered.filter(b => new Date(b.endTime) > now);
+    filtered = filtered.filter(b => new Date(b.endTime) > now);
 
     if (filtered.length === 0) {
       tbody.innerHTML =
@@ -329,7 +330,7 @@ filtered = filtered.filter(b => new Date(b.endTime) > now);
       const statusBadge = isPast
         ? '<span class="badge badge-past">已結束</span>'
         : isOngoing
-          ? '<span class="badge badge-public" style="background:#2980b933;color:#2980b9">進行中</span>'
+          ? '<span class="badge badge-public" style="background:rgba(41,128,185,0.2);color:#2980b9">進行中</span>'
           : '<span class="badge badge-upcoming">即將到來</span>';
 
       const sourceBadge = (b.source === '公眾' || b.source === 'Public')
@@ -355,7 +356,7 @@ filtered = filtered.filter(b => new Date(b.endTime) > now);
         '<td>' + sourceBadge + '</td>' +
         '<td>' +
           '<button class="btn btn-sm" ' +
-          'style="background:#e74c3c33;color:#e74c3c;border:1px solid #e74c3c44" ' +
+          'style="background:rgba(231,76,60,0.2);color:#e74c3c;border:1px solid rgba(231,76,60,0.3)" ' +
           "onclick=\"deleteBooking('" + b.startTime + "')\">" +
           '刪除</button>' +
         '</td>' +
@@ -364,7 +365,6 @@ filtered = filtered.filter(b => new Date(b.endTime) > now);
     }).join('');
   }
 
-  // 刪除預約
   async function deleteBooking(startTime) {
     if (!confirm('確定要刪除這筆預約嗎？')) return;
     try {
@@ -384,11 +384,14 @@ filtered = filtered.filter(b => new Date(b.endTime) > now);
     }
   }
 
-  // 內部日曆
+  // 內部日曆修復：切換月份時清空選擇區域
   function changeInternalMonth(dir) {
     internalMonth += dir;
     if (internalMonth > 11) { internalMonth = 0; internalYear++; }
     if (internalMonth < 0) { internalMonth = 11; internalYear--; }
+    internalSelectedDate = null;
+    internalSelectedStart = null;
+    document.getElementById('internalSlotSection').style.display = 'none';
     renderInternalCalendar();
   }
 
@@ -450,7 +453,7 @@ filtered = filtered.filter(b => new Date(b.endTime) > now);
     const hours = HOURS_BY_DAY[dow];
     const info = document.getElementById('internalDateInfo');
     info.innerHTML =
-      '已選擇：<strong>' + dateStr + '（星期' + days[dow] + '）</strong>　' +
+      '已選擇：<strong>' + dateStr + '（星期' + days[dow] + '）</strong> ' +
       '可用時段：<strong>' + hours.start + ':00 - ' + hours.end + ':00</strong>';
 
     document.getElementById('internalSlotSection').style.display = 'block';
@@ -458,13 +461,20 @@ filtered = filtered.filter(b => new Date(b.endTime) > now);
     renderInternalSlots();
   }
 
+  // 內部日曆修復：安全解析日期字串，確保星期幾（dow）精確算對
   function renderInternalSlots() {
     if (!internalSelectedDate) return;
 
     const duration = parseInt(document.getElementById('internalDuration').value);
- const date = new Date(internalSelectedDate + 'T12:00:00');
+    
+    // 將 YYYY-MM-DD 切割轉為數字，規避跨時區字串解析 Bug
+    const [y, m, d] = internalSelectedDate.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
     const dow = date.getDay();
     const hours = HOURS_BY_DAY[dow];
+    
+    if (!hours) return;
+
     const container = document.getElementById('internalSlots');
     container.innerHTML = '';
     internalSelectedStart = null;
@@ -478,38 +488,32 @@ filtered = filtered.filter(b => new Date(b.endTime) > now);
       }
     });
 
-const now = new Date();
+    const now = new Date();
 
-for (let h = hours.start; h <= hours.end - duration; h++) {
-  const endH = h + duration;
-  const taken = dayBooked.some(b => h < b.end && endH > b.start);
+    for (let h = hours.start; h <= hours.end - duration; h++) {
+      const endH = h + duration;
+      const taken = dayBooked.some(b => h < b.end && endH > b.start);
 
-  // 進行中的時段仍可扣起，只有已完結的時段才禁用
-  const slotStart = new Date(Date.UTC(
-    parseInt(internalSelectedDate.slice(0,4)),
-    parseInt(internalSelectedDate.slice(5,7)) - 1,
-    parseInt(internalSelectedDate.slice(8,10)),
-    h - 8
-  ));
-  const slotEnd = new Date(slotStart.getTime() + duration * 3600000);
-  const isPastSlot = slotEnd <= now;
+      const slotStart = new Date(y, m - 1, d, h, 0, 0);
+      const slotEnd = new Date(slotStart.getTime() + duration * 3600000);
+      const isPastSlot = slotEnd <= now;
 
-  const disabled = taken || isPastSlot;
+      const disabled = taken || isPastSlot;
 
-  const btn = document.createElement('button');
-  btn.className = 'slot-btn-admin' + (disabled ? ' taken' : '');
-  btn.innerHTML = h + ':00<br><small>-' + endH + ':00</small>';
+      const btn = document.createElement('button');
+      btn.className = 'slot-btn-admin' + (disabled ? ' taken' : '');
+      btn.innerHTML = h + ':00<br><small>-' + endH + ':00</small>';
 
-  if (taken) {
-    btn.innerHTML += '<br><small>已預約</small>';
-  } else if (isPastSlot) {
-    btn.innerHTML += '<br><small>已過去</small>';
-  } else {
-    btn.onclick = () => selectInternalSlot(btn, h, endH);
-  }
+      if (taken) {
+        btn.innerHTML += '<br><small>已預約</small>';
+      } else if (isPastSlot) {
+        btn.innerHTML += '<br><small>已過去</small>';
+      } else {
+        btn.onclick = () => selectInternalSlot(btn, h, endH);
+      }
 
-  container.appendChild(btn);
-}
+      container.appendChild(btn);
+    }
   }
 
   function selectInternalSlot(btn, startH, endH) {
@@ -522,7 +526,6 @@ for (let h = hours.start; h <= hours.end - duration; h++) {
       '🔒 確認扣起 ' + internalSelectedDate + ' ' + startH + ':00-' + endH + ':00';
   }
 
-  // 內部扣起提交
   async function submitInternal() {
     if (!internalSelectedDate || internalSelectedStart === null) {
       showInternalMsg('請先選擇日期及時段。', 'error');
@@ -531,19 +534,16 @@ for (let h = hours.start; h <= hours.end - duration; h++) {
 
     const duration = parseInt(document.getElementById('internalDuration').value);
     const note = document.getElementById('internalNote').value.trim() || '內部';
-const startTime = new Date(Date.UTC(
-  parseInt(internalSelectedDate.slice(0,4)),
-  parseInt(internalSelectedDate.slice(5,7)) - 1,
-  parseInt(internalSelectedDate.slice(8,10)),
-  internalSelectedStart - 8
-));
-const endTime = new Date(startTime.getTime() + duration * 3600000);
+    
+    const [y, m, d] = internalSelectedDate.split('-').map(Number);
+    const startTime = new Date(y, m - 1, d, internalSelectedStart, 0, 0);
+    const endTime = new Date(startTime.getTime() + duration * 3600000);
 
-if (endTime <= new Date()) {
-  renderInternalSlots();
-  showInternalMsg('抱歉，你選擇的時段已經完結，請重新選擇。', 'error');
-  return;
-}
+    if (endTime <= new Date()) {
+      renderInternalSlots();
+      showInternalMsg('抱歉，你選擇的時段已經完結，請重新選擇。', 'error');
+      return;
+    }
 
     try {
       const res = await fetch(WORKER_URL, {
@@ -574,46 +574,45 @@ if (endTime <= new Date()) {
     }
   }
 
-  // 匯出 Excel
-function exportExcel() {
-  const from = document.getElementById('exportFrom').value;
-  const to = document.getElementById('exportTo').value;
+  function exportExcel() {
+    const from = document.getElementById('exportFrom').value;
+    const to = document.getElementById('exportTo').value;
 
-  if (!from || !to) {
-    showAdminMsg('請選擇開始及結束日期。', 'error');
-    return;
+    if (!from || !to) {
+      showAdminMsg('請選擇開始及結束日期。', 'error');
+      return;
+    }
+
+    if (to < from) {
+      showAdminMsg('結束日期不能早於開始日期。', 'error');
+      return;
+    }
+
+    const fromDate = new Date(from);
+    const toDate = new Date(to + 'T23:59:59');
+    const filtered = allBookings.filter(b => {
+      const t = new Date(b.startTime);
+      return t >= fromDate && t <= toDate;
+    });
+
+    if (filtered.length === 0) {
+      showAdminMsg('所選日期範圍內沒有預約記錄。', 'error');
+      return;
+    }
+
+    const exportData = filtered.map(b => ({
+      '預約日期': new Date(b.startTime).toLocaleDateString('zh-HK'),
+      '開始時間': new Date(b.startTime).toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit'}),
+      '結束時間': new Date(b.endTime).toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit'}),
+      '會員號碼': b.memberId || b.memberid || '',
+      '來源': b.source || ''
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, '預約記錄');
+    XLSX.writeFile(workbook, 'PartyRoom_預約紀錄_' + from + '_至_' + to + '.xlsx');
   }
-
-  if (to < from) {
-    showAdminMsg('結束日期不能早於開始日期。', 'error');
-    return;
-  }
-
-  const fromDate = new Date(from);
-  const toDate = new Date(to + 'T23:59:59');
-  const filtered = allBookings.filter(b => {
-    const t = new Date(b.startTime);
-    return t >= fromDate && t <= toDate;
-  });
-
-  if (filtered.length === 0) {
-    showAdminMsg('所選日期範圍內沒有預約記錄。', 'error');
-    return;
-  }
-
-  const exportData = filtered.map(b => ({
-    '預約日期': new Date(b.startTime).toLocaleDateString('zh-HK'),
-    '開始時間': new Date(b.startTime).toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit'}),
-    '結束時間': new Date(b.endTime).toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit'}),
-    '會員號碼': b.memberId || b.memberid || '',
-    '來源': b.source || ''
-  }));
-
-  const worksheet = XLSX.utils.json_to_sheet(exportData);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, '預約記錄');
-  XLSX.writeFile(workbook, 'PartyRoom_預約紀錄_' + from + '_至_' + to + '.xlsx');
-}
 
   function showAdminMsg(text, type) {
     const msg = document.getElementById('adminMsg');
@@ -635,7 +634,7 @@ function exportExcel() {
     const d = String(date.getDate()).padStart(2, '0');
     return y + '-' + m + '-' + d;
   }
-  // 批次扣起邏輯處理
+
   async function handleBatchBlock() {
     const fromStr = document.getElementById('batchFrom').value;
     const toStr = document.getElementById('batchTo').value;
@@ -643,11 +642,9 @@ function exportExcel() {
     const endTimeStr = document.getElementById('batchEndTime').value;
     const note = document.getElementById('batchNote').value.trim() || '內部扣起';
 
-    // 取得勾選的星期陣列 (2=二, 3=三, 4=四)
     const selectedDays = Array.from(document.querySelectorAll('.batch-day:checked'))
                               .map(cb => parseInt(cb.value));
 
-    // 驗證輸入
     if (!fromStr || !toStr) {
       showBatchMsg('請選擇開始及結束日期。', 'error');
       return;
@@ -668,7 +665,6 @@ function exportExcel() {
     const startDate = new Date(fromStr + 'T00:00:00');
     const endDate = new Date(toStr + 'T23:59:59');
 
-    // 計算符合條件的批次預約陣列
     const bookingsToCreate = [];
     let current = new Date(startDate);
 
@@ -676,8 +672,6 @@ function exportExcel() {
       const dow = current.getDay();
       if (selectedDays.includes(dow)) {
         const datePrefix = formatDate(current);
-        
-        // 轉為 ISO 字串，保持與單筆新增相同的格林威治時間位移計算
         const startISO = new Date(datePrefix + 'T' + startTimeStr + ':00+08:00').toISOString();
         const endISO = new Date(datePrefix + 'T' + endTimeStr + ':00+08:00').toISOString();
 
@@ -700,7 +694,6 @@ function exportExcel() {
       return;
     }
 
-    // 發送 POST 請求給 Worker
     try {
       const res = await fetch(WORKER_URL, {
         method: 'POST',
@@ -719,7 +712,7 @@ function exportExcel() {
           msgText += `（其中 ${result.conflicts.length} 個時段因時段重疊被自動略過）`;
         }
         showBatchMsg(msgText, 'success');
-        loadBookings(); // 重新載入列表
+        loadBookings();
       } else {
         showBatchMsg('批次扣起失敗：' + (result.message || '未知錯誤'), 'error');
       }
