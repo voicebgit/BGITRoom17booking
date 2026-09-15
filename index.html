@@ -197,8 +197,8 @@
 </div>
 
 <script>
-  // ── 配置與核心狀態 ─────────────────────────
-  const WORKER_URL = "https://your-cloudflare-worker.your-subdomain.workers.dev"; // 請修改為你的 Worker 網址
+  // ⚠️ 請修改為你真實部署後的 Cloudflare Worker URL
+  const WORKER_URL = "https://bg-partyroom-worker.your-subdomain.workers.dev"; 
   const MAX_BOOKINGS = 3;
   const MAX_HOURS = 6;
   
@@ -212,46 +212,21 @@
     zh: {
       title: "BG Party Room 系統(只限12-24歲會員)",
       sub: "只限星期五 14:00-22:00 ｜ 星期六 11:00-22:00 ｜ 星期日 11:00-18:00",
-      calTitle: "選擇日期",
-      slotTitle: "選擇時段",
-      formTitle: "填寫預約資料",
-      durLabel: "使用時數",
-      memberLabel: "會員號碼 *",
-      submitBtn: "確認預約",
-      submitting: "處理中...",
-      overlayBadge: "✅ 預約成功！",
-      backBtn: "🔄 返回重新預約",
-      dateLabel: "日期：",
-      timeLabel: "時間：",
-      errMember: "請輸入有效的會員號碼",
-      errSelect: "請選擇完整的預約時段",
-      errLimit: "已達預約上限（最多3次或合共6小時）",
-      errFail: "預約失敗，請重試",
-      errNet: "網路連線異常，請稍後再試"
+      calTitle: "選擇日期", slotTitle: "選擇時段", formTitle: "填寫預約資料", durLabel: "使用時數",
+      memberLabel: "會員號碼 *", submitBtn: "確認預約", submitting: "處理中...", overlayBadge: "✅ 預約成功！",
+      backBtn: "🔄 返回重新預約", dateLabel: "日期：", timeLabel: "時間：", errMember: "請輸入有效的會員號碼",
+      errSelect: "請選擇完整的預約時段", errLimit: "已達預約上限（最多3次或合共6小時）", errFail: "預約失敗，請重試", errNet: "網路連線異常，請稍後再試"
     },
     en: {
       title: "BG Party Room System (12-24 Yrs Only)",
       sub: "Fri 14:00-22:00 | Sat 11:00-22:00 | Sun 11:00-18:00",
-      calTitle: "Select Date",
-      slotTitle: "Select Time Slot",
-      formTitle: "Fill Booking Details",
-      durLabel: "Duration",
-      memberLabel: "Member ID *",
-      submitBtn: "Confirm Booking",
-      submitting: "Processing...",
-      overlayBadge: "✅ Booking Successful!",
-      backBtn: "🔄 Back to Booking",
-      dateLabel: "Date: ",
-      timeLabel: "Time: ",
-      errMember: "Please enter a valid Member ID",
-      errSelect: "Please select a complete booking slot",
-      errLimit: "Booking limit reached (Max 3 times or 6 hours)",
-      errFail: "Booking failed, please try again",
-      errNet: "Network error, please try again later"
+      calTitle: "Select Date", slotTitle: "Select Time Slot", formTitle: "Fill Booking Details", durLabel: "Duration",
+      memberLabel: "Member ID *", submitBtn: "Confirm Booking", submitting: "Processing...", overlayBadge: "✅ Booking Successful!",
+      backBtn: "🔄 Back to Booking", dateLabel: "Date: ", timeLabel: "Time: ", errMember: "Please enter a valid Member ID",
+      errSelect: "Please select a complete booking slot", errLimit: "Booking limit reached (Max 3 times or 6 hours)", errFail: "Booking failed, please try again", errNet: "Network error, please try again later"
     }
   };
 
-  // ── 初始化與載入 ──────────────────────────
   document.addEventListener("DOMContentLoaded", function() {
     initModal();
     renderCalendar();
@@ -276,7 +251,6 @@
     }
   }
 
-  // ── API 交互 ─────────────────────────────
   async function loadBookings() {
     try {
       const res = await fetch(WORKER_URL);
@@ -289,28 +263,21 @@
     }
   }
 
-  // ── 月曆邏輯 ─────────────────────────────
   function renderCalendar() {
     const grid = document.getElementById("calGrid");
     grid.innerHTML = "";
-    
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     
     document.getElementById("calTitle").textContent = `${year} 年 ${month + 1} 月`;
-    
     const days = ['日', '一', '二', '三', '四', '五', '六'];
-    days.forEach(d => {
-      grid.innerHTML += `<div class="cal-header">${d}</div>`;
-    });
+    days.forEach(d => grid.innerHTML += `<div class="cal-header">${d}</div>`);
 
     const firstDay = new Date(year, month, 1).getDay();
     const totalDays = new Date(year, month + 1, 0).getDate();
     const todayStr = formatDate(new Date());
 
-    for (let i = 0; i < firstDay; i++) {
-      grid.innerHTML += `<div class="cal-day empty"></div>`;
-    }
+    for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="cal-day empty"></div>`;
 
     for (let day = 1; day <= totalDays; day++) {
       const dateObj = new Date(year, month, day);
@@ -323,14 +290,13 @@
 
       if (dateStr < todayStr) {
         el.classList.add("past");
-      } else if (dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0) { // 僅限五、六、日
+      } else if (dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0) {
         el.classList.add("available");
         if (selectedDate === dateStr) el.classList.add("selected");
         el.onclick = () => selectDate(dateStr, el);
       } else {
-        el.classList.add("past"); // 非開放日
+        el.classList.add("past");
       }
-      
       grid.appendChild(el);
     }
   }
@@ -350,11 +316,9 @@
     document.getElementById("formCard").style.display = "none";
     document.getElementById("selectedDateInfo").style.display = "block";
     document.getElementById("selectedDateInfo").innerHTML = `已選擇日期：<strong>${dateStr}</strong>`;
-    
     renderSlots();
   }
 
-  // ── 時段選取邏輯 ──────────────────────────
   function renderSlots() {
     const slotsContainer = document.getElementById("timeSlots");
     slotsContainer.innerHTML = "";
@@ -369,7 +333,6 @@
 
     for (let h = startH; h <= endH - duration; h++) {
       const isBooked = checkSlotOverlap(selectedDate, h, h + duration);
-      
       const btn = document.createElement("button");
       btn.className = `slot-btn ${isBooked ? 'disabled' : ''}`;
       btn.textContent = `${h}:00 - ${h + duration}:00`;
@@ -409,7 +372,6 @@
     formCard.scrollIntoView({ behavior: 'smooth' });
   }
 
-  // ── 提交與限制 ───────────────────────────
   function checkMemberLimit(memberId) {
     const userBookings = existingBookings.filter(b => b.memberId === memberId);
     let totalHours = 0;
@@ -433,22 +395,19 @@
     if (!selectedDate || selectedStart === null) { showMsg(t.errSelect, 'error'); return; }
 
     const duration = parseInt(document.getElementById('duration').value);
-
     const { count, totalHours } = checkMemberLimit(memberId);
     if (count >= MAX_BOOKINGS || totalHours + duration > MAX_HOURS) {
       showMsg(t.errLimit, 'error');
       return;
     }
 
-    const startTime = new Date(Date.UTC(
-      parseInt(selectedDate.slice(0,4)),
-      parseInt(selectedDate.slice(5,7)) - 1,
-      parseInt(selectedDate.slice(8,10)),
-      selectedStart - 8
-    ));
-    const endTime = new Date(startTime.getTime() + duration * 3600000);
+    // 正確的香港時區 (+08:00) ISO 字串構建，避免 UTC 偏差
+    const startStr = String(selectedStart).padStart(2, '0');
+    const endStr = String(selectedStart + duration).padStart(2, '0');
+    const startTimeISO = `${selectedDate}T${startStr}:00:00+08:00`;
+    const endTimeISO = `${selectedDate}T${endStr}:00:00+08:00`;
 
-    if (endTime <= new Date()) {
+    if (new Date(endTimeISO) <= new Date()) {
       showMsg('該時段已過期，請重新選擇。', 'error');
       renderSlots();
       return;
@@ -464,8 +423,8 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           memberId,
-          startTime: startTime.toISOString(),
-          endTime: endTime.toISOString(),
+          startTime: new Date(startTimeISO).toISOString(),
+          endTime: new Date(endTimeISO).toISOString(),
           source: '公眾'
         })
       });
@@ -482,7 +441,6 @@
         const overlay = document.getElementById('rulesOverlay');
         overlay.classList.add('active');
         overlay.scrollTop = 0;
-
         await loadBookings();
       } else {
         showMsg(result.message === 'Time slot already booked' ? '該時段已被預約' : t.errFail, 'error');
@@ -507,7 +465,6 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // ── 通用工具函式 ───────────────────────────
   function showMsg(text, type) {
     const msg = document.getElementById('msg');
     msg.textContent = text;
@@ -522,9 +479,7 @@
   }
 
   function escapeHtml(str) {
-    return String(str).replace(/[&<>"']/g, function(m) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
-    });
+    return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
   }
 
   function toggleLang() {
