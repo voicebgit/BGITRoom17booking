@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BG Party Room 預約 (只限12-24歲會員)</title>
+  <title>BG Party Room 預約 (只限12-24歲'TO_MO'及中心會員)</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f0f2f5; color: #333; }
@@ -87,41 +87,111 @@
   <div class="rules-inner">
     <div class="rules-success-badge" id="overlayBadge">✅ 預約成功！</div>
     <div class="rules-booking-info" id="overlayBookingInfo"></div>
-    <h2 style="text-align:center; color:white; font-size:1.1rem; margin-bottom:4px;">🎉 BGIT Party Room</h2>
-    <h3 style="text-align:center; color:#e74c3c; font-size:0.95rem; margin-bottom:12px;">使用須知 Room Rules</h3>
-    <div class="rules-screenshot-tip">
-      📸 請截圖本頁面，到達時向櫃台當值同事出示以作證明<br>
-      <em>Screenshot this page and show to counter staff for verification</em>
+    
+    <h2 style="text-align:center; color:#ffffff; font-size:1.2rem; margin: 12px 0 4px 0; font-weight:700;">🎉 BGIT Party Room</h2>
+    <h3 style="text-align:center; color:#ff6b6b; font-size:0.95rem; margin-bottom:16px; font-weight:600;">使用須知及免責聲明 Room Rules & Disclaimer</h3>
+
+    <!-- 頂部重點提示：截圖證明 -->
+    <div class="alert-banner">
+      <div class="alert-icon">📸</div>
+      <div class="alert-content">
+        <strong>請務必截圖本頁面！</strong><br>
+        到達時請向櫃台當值同事出示截圖以作證明<br>
+        <em>Screenshot this page & show to counter staff for verification</em>
+      </div>
     </div>
-    <div class="rule-item"><span class="rule-icon">👟</span>
-      <div><strong>1.</strong> 入場前除鞋 · 並請穿著襪子進入 · 逾時30分鐘未到視為放棄預約<br>
-      <em>Remove shoes upon entry · Please arrive 5 minutes early · After 30 minutes of not showing up will be counted as forfeited booking</em></div>
+
+    <!-- 規則與免責條款清單 -->
+    <div class="rules-list">
+      <!-- 贊助與會員資格 -->
+      <div class="rule-item highlight-item">
+        <div class="rule-icon">📱</div>
+        <div class="rule-text">
+          <strong>1. 會員與年齡限制：</strong>本房間由平行心間贊助建設。使用者<strong>必須為「TO_MO by 21C@JC app」會員</strong>（可於 App Store / Play Store 下載），且服務對象<strong>僅限 12~24 歲青年</strong>使用。<br>
+          <em>Sponsored by LevelUp. All users MUST be 'TO_MO by 21C@JC app' members and aged 12-24 only.</em>
+        </div>
+      </div>
+
+      <!-- 入場須知 -->
+      <div class="rule-item">
+        <div class="rule-icon">👟</div>
+        <div class="rule-text">
+          <strong>2. 入場須知：</strong>入場前請脫鞋並穿著襪子。請提前 5 分鐘到達，<strong>逾時 30 分鐘未到視為放棄預約，則可供他人取代預約。</strong>。<br>
+          <em>Remove shoes & wear socks · Arrive 5 mins early · Over 30 mins late will be forfeited.</em>
+        </div>
+      </div>
+
+      <!-- 飲食與禁煙規範 -->
+      <div class="rule-item">
+        <div class="rule-icon">🚭</div>
+        <div class="rule-text">
+          <strong>3. 禁煙與飲食限制：</strong>室內<strong>全面禁煙及禁酒</strong>。可自備食物，但<strong>嚴禁榴槤等濃味食物</strong>；地氈區全面禁止飲食。<br>
+          <em>Strictly NO smoking or alcohol · Outside food OK · NO strong-smelling food (e.g. durian) · NO food/drink on carpet.</em>
+        </div>
+      </div>
+
+      <!-- 愛護公物與復原 -->
+      <div class="rule-item">
+        <div class="rule-icon">🧹</div>
+        <div class="rule-text">
+          <strong>4. 清理與物品歸位：</strong>請愛惜設施。<strong>請於預約時段結束前完成清理並離場</strong>，物品須歸位，房屋內有提供垃圾袋，離場時請將垃圾帶至門外垃圾桶棄置。<br>
+          <em>Restore facilities, return all items & dispose of rubbish outside BEFORE booking ends to respect the next user.</em>
+        </div>
+      </div>
+
+      <!-- 節約能源 -->
+      <div class="rule-item">
+        <div class="rule-icon">⚡</div>
+        <div class="rule-text">
+          <strong>5. 節約能源：</strong>離場前請關閉所有電源（燈光、冷氣、電視及各類電器）。<br>
+          <em>Switch off all power before leaving (lights, AC, TV, appliances).</em>
+        </div>
+      </div>
+
+      <!-- 法律與合規 -->
+      <div class="rule-item">
+        <div class="rule-icon">⚖️</div>
+        <div class="rule-text">
+          <strong>6. 合規使用：</strong>嚴禁在房內進行任何違法或商業活動。<br>
+          <em>Strictly NO illegal or commercial activities inside the room.</em>
+        </div>
+      </div>
+
+      <!-- 違規與賠償責任 -->
+      <div class="rule-item warning-item">
+        <div class="rule-icon">⚠️</div>
+        <div class="rule-text">
+          <strong>7. 損壞賠償與服務令：</strong>如因使用不當致物品遺失或損壞，或未將物品歸位，中心有權要求使用者進行<strong>「中心服務令」或進行等價賠償</strong>；嚴重者將會被列入黑名單 😅<br>
+          <em>If damaged/lost or unorganized, responsible person may be required to perform service hours or pay compensation; severe cases will be blacklisted 😅</em>
+        </div>
+      </div>
+
+      <!-- 免責聲明 -->
+      <div class="rule-item notice-item">
+        <div class="rule-icon">🛡️</div>
+        <div class="rule-text">
+          <strong>8. 免責聲明：</strong>中心對個人物品之遺失或損壞概不負責。若因不可抗力因素（如惡劣天氣或緊急維修），本中心保留取消或調整預約之最終權利。<br>
+          <em>Center is NOT responsible for lost/damaged personal items. Center reserves the right to adjust bookings due to weather/repairs.</em>
+        </div>
+      </div>
+
+      <!-- 查詢 -->
+      <div class="rule-item">
+        <div class="rule-icon">❓</div>
+        <div class="rule-text">
+          <strong>9. 尋求協助：</strong>如有任何疑問，請致電2414 8283或向中心當值職員查詢。<br>
+          <em>For enquiries, please approach on-duty staff.</em>
+        </div>
+      </div>
     </div>
-    <div class="rule-item"><span class="rule-icon">🚬</span>
-      <div><strong>2.</strong> 室內全面禁煙<br><em>No smoking inside the room</em></div>
+
+    <!-- 底部確認按鈕 -->
+    <div class="rules-footer-note">
+      * 按下「明白及同意」即代表已閱讀、明白並同意遵守上述所有房間使用規則與免責條款。<br>
+      <em>By clicking agree, you acknowledge and accept all room rules and terms above.</em>
     </div>
-    <div class="rule-item"><span class="rule-icon">💝</span>
-      <div><strong>3.</strong> 請愛惜所有設備及設施<br><em>Handle all equipment with care</em></div>
-    </div>
-    <div class="rule-item"><span class="rule-icon">🗑️</span>
-      <div><strong>4.</strong> 離場時帶走垃圾放門外垃圾桶，設施還原<br><em>Dispose rubbish outside & restore all facilities before leaving</em></div>
-    </div>
-    <div class="rule-item"><span class="rule-icon">🍱</span>
-      <div><strong>5.</strong> 可自備食物，禁榴槤等濃味食物 · 地氈區禁飲食 · 禁酒精飲品<br><em>Outside food OK, no strong-smelling food · No food/drink on carpet · No alcohol</em></div>
-    </div>
-    <div class="rule-item"><span class="rule-icon">💡</span>
-      <div><strong>6.</strong> 離場前關掉所有電源（燈·冷氣·電視·電器）<br><em>Switch off all power before leaving (lights, AC, TV, appliances)</em></div>
-    </div>
-    <div class="rule-item"><span class="rule-icon">⚖️</span>
-      <div><strong>7.</strong> 嚴禁非法及商業活動<br><em>No illegal or commercial activities</em></div>
-    </div>
-    <div class="rule-item"><span class="rule-icon">📋</span>
-      <div><strong>8.</strong> 如有違規或損壞須進行中心服務令 😅<br><em>If any damage is caused in the room , the responsible person might have to do service hours to compensate the damage 😅</em></div>
-    </div>
-    <div class="rule-item"><span class="rule-icon">❓</span>
-      <div><strong>9.</strong> 如有疑問請向當值職員查詢<br><em>For enquiries, please approach on-duty staff</em></div>
-    </div>
-    <button id="backBtn" onclick="closeRules()" class="rules-back-btn">🔄 返回重新預約 · Back to Booking</button>
+
+    <button id="backBtn" onclick="closeRules()" class="rules-back-btn">👍 明白及同意 · I Agree & Return</button>
   </div>
 </div>
 
@@ -130,13 +200,14 @@
   <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap;">
     <img src="BGIT_Logo.jpg" alt="BGIT Logo" style="height:60px; width:auto; flex-shrink:0;" onerror="this.style.display='none'">
     <div style="text-align:center;">
-      <h1>🎉 <span id="h-title">BG Party Room 系統(只限12-24歲會員)</span></h1>
-      <p id="h-sub">只限星期五 14:00-22:00 ｜ 星期六 11:00-22:00 ｜ 星期日 11:00-18:00</p>
+      <h1>🎉 <span id="h-title">BG Party Room 系統(只限12-24歲之TO_MO會員及中心會員)</span></h1>
+      <p id="h-sub">星期五 14:00-22:00 ｜ 星期六 11:00-22:00 ｜ 星期日 11:00-18:00</p>
     </div>
   </div>
   <p id="h-info" style="margin-top:10px; font-size:0.78rem; opacity:0.7; text-align:center;">
     Party Room 運作將由 BG Committee - Beaver 協助管理 如有查詢 📩 IG：
     <a href="https://www.instagram.com/bgit_committee" target="_blank" style="color:#aed6f1; text-decoration:none;">@bgit_committee</a>
+    中心地址:荃灣麗城花園一期三座平台(7-11左邊樓梯上去轉左就到啦~)
   </p>
 </header>
 
