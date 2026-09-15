@@ -160,6 +160,58 @@
     </div>
   </div>
 
+  <!-- 批次扣起房間 (星期二至四) -->
+  <div class="card">
+    <h2>🗓️ 批次扣起房間 (星期二至四)</h2>
+    <div id="batchMsg" class="msg"></div>
+    
+    <div class="row">
+      <div>
+        <label>開始日期</label>
+        <input type="date" id="batchFrom">
+      </div>
+      <div>
+        <label>結束日期</label>
+        <input type="date" id="batchTo">
+      </div>
+    </div>
+
+    <div style="margin-bottom: 14px;">
+      <label>重複星期</label>
+      <div style="display: flex; gap: 16px; padding: 6px 0;">
+        <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
+          <input type="checkbox" class="batch-day" value="2" checked style="width: auto; margin: 0;"> 星期二
+        </label>
+        <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
+          <input type="checkbox" class="batch-day" value="3" checked style="width: auto; margin: 0;"> 星期三
+        </label>
+        <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
+          <input type="checkbox" class="batch-day" value="4" checked style="width: auto; margin: 0;"> 星期四
+        </label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>每日開始時間</label>
+        <input type="time" id="batchStartTime" value="09:00">
+      </div>
+      <div>
+        <label>每日結束時間</label>
+        <input type="time" id="batchEndTime" value="18:00">
+      </div>
+    </div>
+
+    <div>
+      <label>扣起原因 / 備註</label>
+      <input type="text" id="batchNote" value="內部保養" placeholder="例：維護、中心例行保養">
+    </div>
+
+    <button class="btn btn-red" onclick="handleBatchBlock()" style="margin-top: 8px;">
+      🔒 執行批次扣起
+    </button>
+  </div>
+  
   <!-- 匯出 Excel -->
   <div class="card">
     <h2>📊 匯出預約記錄</h2>
@@ -582,6 +634,105 @@ function exportExcel() {
     const m = String(date.getMonth() + 1).padStart(2, '0');
     const d = String(date.getDate()).padStart(2, '0');
     return y + '-' + m + '-' + d;
+  }
+  // 批次扣起邏輯處理
+  async function handleBatchBlock() {
+    const fromStr = document.getElementById('batchFrom').value;
+    const toStr = document.getElementById('batchTo').value;
+    const startTimeStr = document.getElementById('batchStartTime').value;
+    const endTimeStr = document.getElementById('batchEndTime').value;
+    const note = document.getElementById('batchNote').value.trim() || '內部扣起';
+
+    // 取得勾選的星期陣列 (2=二, 3=三, 4=四)
+    const selectedDays = Array.from(document.querySelectorAll('.batch-day:checked'))
+                              .map(cb => parseInt(cb.value));
+
+    // 驗證輸入
+    if (!fromStr || !toStr) {
+      showBatchMsg('請選擇開始及結束日期。', 'error');
+      return;
+    }
+    if (!startTimeStr || !endTimeStr) {
+      showBatchMsg('請選擇每日開始與結束時間。', 'error');
+      return;
+    }
+    if (selectedDays.length === 0) {
+      showBatchMsg('請至少勾選一個重複星期。', 'error');
+      return;
+    }
+    if (toStr < fromStr) {
+      showBatchMsg('結束日期不能早於開始日期。', 'error');
+      return;
+    }
+
+    const startDate = new Date(fromStr + 'T00:00:00');
+    const endDate = new Date(toStr + 'T23:59:59');
+
+    // 計算符合條件的批次預約陣列
+    const bookingsToCreate = [];
+    let current = new Date(startDate);
+
+    while (current <= endDate) {
+      const dow = current.getDay();
+      if (selectedDays.includes(dow)) {
+        const datePrefix = formatDate(current);
+        
+        // 轉為 ISO 字串，保持與單筆新增相同的格林威治時間位移計算
+        const startISO = new Date(datePrefix + 'T' + startTimeStr + ':00+08:00').toISOString();
+        const endISO = new Date(datePrefix + 'T' + endTimeStr + ':00+08:00').toISOString();
+
+        bookingsToCreate.push({
+          memberId: note,
+          startTime: startISO,
+          endTime: endISO,
+          source: '內部'
+        });
+      }
+      current.setDate(current.getDate() + 1);
+    }
+
+    if (bookingsToCreate.length === 0) {
+      showBatchMsg('指定日期範圍內沒有符合條件的星期選項。', 'error');
+      return;
+    }
+
+    if (!confirm(`即將批次扣起共 ${bookingsToCreate.length} 個時段，是否確認執行？`)) {
+      return;
+    }
+
+    // 發送 POST 請求給 Worker
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: adminHeaders,
+        body: JSON.stringify({
+          action: 'batch_create',
+          bookings: bookingsToCreate
+        })
+      });
+
+      const result = await res.json();
+
+      if (result.status === 'success') {
+        let msgText = `成功扣起 ${result.insertedCount || bookingsToCreate.length} 個時段！`;
+        if (result.conflicts && result.conflicts.length > 0) {
+          msgText += `（其中 ${result.conflicts.length} 個時段因時段重疊被自動略過）`;
+        }
+        showBatchMsg(msgText, 'success');
+        loadBookings(); // 重新載入列表
+      } else {
+        showBatchMsg('批次扣起失敗：' + (result.message || '未知錯誤'), 'error');
+      }
+    } catch (e) {
+      showBatchMsg('網絡錯誤，請稍後再試。', 'error');
+    }
+  }
+
+  function showBatchMsg(text, type) {
+    const msg = document.getElementById('batchMsg');
+    msg.textContent = text;
+    msg.className = 'msg ' + type;
+    setTimeout(() => { msg.className = 'msg'; }, 4000);
   }
 </script>
 </body>
