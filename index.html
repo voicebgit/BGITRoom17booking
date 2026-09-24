@@ -343,7 +343,7 @@
   let selectedStart = null;
   let existingBookings = [];
 
-  const T = {
+const T = {
     zh: {
       title: "BG Party Room 系統(只限12-24歲會員)",
       sub: "星期五 14:00-22:00 ｜ 星期六 11:00-22:00 ｜ 星期日 11:00-18:00",
@@ -355,15 +355,32 @@
       memberLabel: "會員號碼 *", partySizeLabel: "預約人數 *",
       submitBtn: "確認預約", submitting: "處理中...", overlayBadge: "✅ 預約成功！",
       backBtn: "👍 明白及同意 · I Agree & Return", dateLabel: "日期：", timeLabel: "時間：", 
-      termsText: "我已閱讀並同意", termsLink: "《房間使用規則及免責聲明》",
+      termsText: "I have read and agree to the", termsLink: "《房間使用規則及免責聲明》",
       modalTitle: "📜 房間使用規則及免責聲明",
       modalBtn: "我已明白並關閉",
+      // 👉 在此補上中文 modalBody 內容
+      modalBody: `
+        <h4>【使用規則】</h4>
+        <ol>
+          <li>房間由平行心間贊助建設，請確保使用者均已成為 'TO_MO by 21C@JC app' 會員 (可於 App Store 或 Play Store 中下載)。</li>
+          <li>本房間「只」可提供予「12~24歲」的服務對象使用。</li>
+          <li>使用房間時請保持整潔，使用完畢後請將物品歸位，否則有機會被要求進行「中心服務令」，如情況嚴重或會被黑名單。</li>
+          <li>嚴禁在房內進行任何違法、商業活動，房間內不予吸煙及進食味道濃烈的食物。</li>
+          <li>請於預約時段結束前完成清理並離場，避免影響下一位使用者。</li>
+        </ol>
+        <h4>【免責聲明】</h4>
+        <ol>
+          <li>本中心對個人物品之遺失或損壞概不負責，請自行妥善保管。</li>
+          <li>如房間物品因個人使用不當而致遺失或損壞，中心可要求使用者進行「中心服務令」或要求賠償，請各位珍惜使用中心物品。</li>
+          <li>若因不可抗力因素（如惡劣天氣或緊急維修），本中心保留取消或調整預約之最終權利。</li>
+          <li>如按下「明白」則視為明白及會遵守所有房間使用規則，如有違反中心保留所有最終權利。</li>
+        </ol>`,
       errMember: "請輸入有效的會員號碼",
       errSelect: "請選擇完整的預約時段", errLimit: "已達預約上限（最多3次或合共6小時）", errFail: "預約失敗，請重試", errNet: "網路連線異常，請稍後再試",
       days: ['日', '一', '二', '三', '四', '五', '六']
     },
     en: {
-      title: "BG Party Room System (12-24 Yrs Only)",
+      title: "BG Party Room System (TO_MO members and center members aged 12-24 only)",
       sub: "Fri 14:00-22:00 | Sat 11:00-22:00 | Sun 11:00-18:00",
       mgmt: "Party Room operations are managed by BG Committee - Beaver. Enquiries 📩 IG:",
       addr: "📍 Address: Podium, Block 3, Belvedere Garden Phase 1, Tsuen Wan (Up the stairs next to 7-11, turn left)",
@@ -376,6 +393,23 @@
       termsText: "I have read and agree to the", termsLink: "《Room Rules & Disclaimer》",
       modalTitle: "📜 Room Rules & Disclaimer",
       modalBtn: "I Understand & Close",
+      // 👉 在此補上英文 modalBody 內容（可依需求調整英文翻譯）
+      modalBody: `
+        <h4>【Room Rules】</h4>
+        <ol>
+          <li>Sponsored by Levelmind2.0. All users MUST be 'TO_MO by 21C@JC app' members (downloadable via App Store / Play Store).</li>
+          <li>Aged 12-24 only.</li>
+          <li>Keep the room clean and restore all items after use; otherwise, service hours or blacklisting may apply.</li>
+          <li>Strictly NO illegal/commercial activities, smoking, or strong-smelling food.</li>
+          <li>Complete cleanup and leave before the booking ends.</li>
+        </ol>
+        <h4>【Disclaimer】</h4>
+        <ol>
+          <li>The center is NOT responsible for lost or damaged personal items.</li>
+          <li>Users are liable for any damage or loss caused by improper use.</li>
+          <li>The center reserves the right to cancel or adjust bookings due to force majeure.</li>
+          <li>Clicking understand implies full compliance with all rules.</li>
+        </ol>`,
       errMember: "Please enter a valid Member ID",
       errSelect: "Please select a complete booking slot", errLimit: "Booking limit reached (Max 3 times or 6 hours)", errFail: "Booking failed, please try again", errNet: "Network error, please try again later",
       days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -638,7 +672,7 @@
     return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
   }
 
-  function toggleLang() {
+function toggleLang() {
     lang = lang === 'zh' ? 'en' : 'zh';
     const t = T[lang];
 
@@ -647,7 +681,6 @@
     document.getElementById('h-sub').textContent = t.sub;
     document.getElementById('h-mgmt').textContent = t.mgmt;
     document.getElementById('h-addr').textContent = t.addr;
-    document.getElementById('t-partySizeLabel').textContent = t.partySizeLabel;
 
     document.getElementById('t-calTitle').textContent = t.calTitle;
     document.getElementById('leg-avail').textContent = t.legAvail;
@@ -659,15 +692,29 @@
     document.getElementById('t-durLabel').textContent = t.durLabel;
     document.getElementById('dur1').textContent = t.dur1;
     document.getElementById('dur2').textContent = t.dur2;
+
+    document.getElementById('t-slotTitle').textContent = t.slotTitle;
     document.getElementById('t-formTitle').textContent = t.formTitle;
     document.getElementById('t-memberLabel').textContent = t.memberLabel;
+    document.getElementById('t-partySizeLabel').textContent = t.partySizeLabel;
+    
     document.getElementById('terms-text').textContent = t.termsText;
     document.getElementById('terms-link').textContent = t.termsLink;
     document.getElementById('submitBtn').textContent = t.submitBtn;
-    document.getElementById('m-title').textContent = t.modalTitle;
-    document.getElementById('m-btn').textContent = t.modalBtn;
-    document.getElementById('m-body').innerHTML = t.modalBody;
 
+    document.getElementById('m-title').textContent = t.modalTitle;
+    document.getElementById('m-body').innerHTML = t.modalBody;
+    document.getElementById('m-btn').textContent = t.modalBtn;
+
+    document.getElementById('rulesFooterNote').innerHTML = lang === 'zh' 
+      ? '* 按下「明白及同意」即代表已閱讀、明白並同意遵守所有房間使用規則與免責聲明。<br><em>By clicking agree, you acknowledge and accept all room rules and terms above.</em>'
+      : '* By clicking agree, you acknowledge and accept all room rules and terms above.<br><em>按下「明白及同意」即代表已閱讀、明白並同意遵守所有房間使用規則與免責聲明。</em>';
+    document.getElementById('backBtn').textContent = t.backBtn;
+
+    if (selectedDate) {
+      document.getElementById("selectedDateInfo").innerHTML = `${lang === 'zh' ? '已選擇日期：' : 'Selected Date: '}<strong>${selectedDate}</strong>`;
+      renderSlots();
+    }
     renderCalendar();
   }
 </script>
