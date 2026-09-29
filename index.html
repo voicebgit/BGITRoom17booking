@@ -558,15 +558,19 @@ const T = {
     formCard.scrollIntoView({ behavior: 'smooth' });
   }
 
-  function checkMemberLimit(memberId) {
-    const userBookings = existingBookings.filter(b => b.memberId === memberId);
-    let totalHours = 0;
-    userBookings.forEach(b => {
-      const hrs = (new Date(b.endTime) - new Date(b.startTime)) / 3600000;
-      totalHours += hrs;
-    });
-    return { count: userBookings.length, totalHours };
-  }
+function checkMemberLimit(memberId) {
+  const now = new Date().getTime();
+  const userBookings = existingBookings.filter(b => {
+    // 只計算該會員且尚未結束的預約
+    return b.memberId === memberId && new Date(b.endTime).getTime() > now;
+  });
+  let totalHours = 0;
+  userBookings.forEach(b => {
+    const hrs = (new Date(b.endTime) - new Date(b.startTime)) / 3600000;
+    totalHours += hrs;
+  });
+  return { count: userBookings.length, totalHours };
+}
 
   async function submitBooking() {
     const t = T[lang];
