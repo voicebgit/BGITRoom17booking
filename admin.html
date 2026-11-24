@@ -69,7 +69,7 @@
 </head>
 <body>
 <header>
-  <h1>🔐 BG Party Room 內部管理系統</h1>
+  <h1>BG Party Room 內部管理系統</h1>
   <p>僅限當值同事使用</p>
 </header>
 
@@ -85,7 +85,7 @@
   <!-- 預約列表 -->
   <div class="card">
     <h2>
-      📋 所有預約記錄
+      所有預約記錄
       <span id="bookingCount" class="tag-count"></span>
       <button id="logoutBtn" onclick="doLogout()">登出</button>
     </h2>
@@ -102,7 +102,7 @@
       <div style="display:flex;align-items:flex-end;padding-bottom:14px">
         <button class="btn btn-blue" onclick="clearFilter()">清除篩選</button>
         &nbsp;
-        <button class="btn btn-blue" onclick="loadBookings()">🔄 重新整理</button>
+        <button class="btn btn-blue" onclick="loadBookings()">重新整理</button>
       </div>
     </div>
     <div class="table-wrap">
@@ -112,13 +112,14 @@
             <th>狀態</th>
             <th>日期</th>
             <th>時間</th>
-            <th>會員號碼</th>
+            <th>會員號碼／備註</th>
+            <th>用途</th>
             <th>來源</th>
             <th>操作</th>
           </tr>
         </thead>
         <tbody id="bookingBody">
-          <tr><td colspan="6" class="loading">載入中...</td></tr>
+          <tr><td colspan="7" class="loading">載入中...</td></tr>
         </tbody>
       </table>
     </div>
@@ -126,7 +127,7 @@
 
   <!-- 內部扣起時段 -->
   <div class="card">
-    <h2>🔒 內部扣起時段</h2>
+    <h2>內部扣起時段</h2>
     <div id="internalMsg" class="msg"></div>
     <div class="row">
       <div>
@@ -150,21 +151,32 @@
           </select>
         </div>
         <div>
+          <label for="internalPurpose">使用用途 *</label>
+          <select id="internalPurpose">
+            <option value="">請選擇用途</option>
+            <option value="party_room">Party Room</option>
+            <option value="band">Band</option>
+            <option value="activity">活動</option>
+          </select>
+        </div>
+        <div>
           <label for="internalNote">備註（顯示為會員號碼欄）</label>
           <input type="text" id="internalNote" placeholder="例：清潔、維修、活動...">
         </div>
       </div>
       <div class="slot-grid" id="internalSlots"></div>
       <br>
-      <button class="btn btn-orange" id="internalSubmitBtn" onclick="submitInternal()" style="display:none">🔒 確認扣起此時段</button>
+      <button class="btn btn-orange" id="internalSubmitBtn" onclick="submitInternal()" style="display:none">
+        確認扣起此時段
+      </button>
     </div>
   </div>
 
-  <!-- 批次扣起房間 (星期二至日) -->
+  <!-- 批次扣起房間：保留原有功能 -->
   <div class="card">
-    <h2>🗓️ 批次扣起房間 (星期二至日)</h2>
+    <h2>批次扣起房間 (星期二至日)</h2>
     <div id="batchMsg" class="msg"></div>
-    
+
     <div class="row">
       <div>
         <label for="batchFrom">開始日期</label>
@@ -176,26 +188,26 @@
       </div>
     </div>
 
-    <div style="margin-bottom: 14px;">
+    <div style="margin-bottom:14px">
       <label>重複星期</label>
-      <div style="display: flex; gap: 16px; padding: 6px 0; flex-wrap: wrap;">
-        <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
-          <input type="checkbox" class="batch-day" value="2" style="width: auto; margin: 0;"> 星期二
+      <div style="display:flex;gap:16px;padding:6px 0;flex-wrap:wrap">
+        <label style="cursor:pointer;color:#eee;display:flex;align-items:center;gap:6px">
+          <input type="checkbox" class="batch-day" value="2" style="width:auto;margin:0"> 星期二
         </label>
-        <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
-          <input type="checkbox" class="batch-day" value="3" style="width: auto; margin: 0;"> 星期三
+        <label style="cursor:pointer;color:#eee;display:flex;align-items:center;gap:6px">
+          <input type="checkbox" class="batch-day" value="3" style="width:auto;margin:0"> 星期三
         </label>
-        <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
-          <input type="checkbox" class="batch-day" value="4" style="width: auto; margin: 0;"> 星期四
+        <label style="cursor:pointer;color:#eee;display:flex;align-items:center;gap:6px">
+          <input type="checkbox" class="batch-day" value="4" style="width:auto;margin:0"> 星期四
         </label>
-        <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
-          <input type="checkbox" class="batch-day" value="5" style="width: auto; margin: 0;"> 星期五
+        <label style="cursor:pointer;color:#eee;display:flex;align-items:center;gap:6px">
+          <input type="checkbox" class="batch-day" value="5" style="width:auto;margin:0"> 星期五
         </label>
-        <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
-          <input type="checkbox" class="batch-day" value="6" style="width: auto; margin: 0;"> 星期六
+        <label style="cursor:pointer;color:#eee;display:flex;align-items:center;gap:6px">
+          <input type="checkbox" class="batch-day" value="6" style="width:auto;margin:0"> 星期六
         </label>
-        <label style="cursor: pointer; color: #eee; display: flex; align-items: center; gap: 6px;">
-          <input type="checkbox" class="batch-day" value="0" style="width: auto; margin: 0;"> 星期日
+        <label style="cursor:pointer;color:#eee;display:flex;align-items:center;gap:6px">
+          <input type="checkbox" class="batch-day" value="0" style="width:auto;margin:0"> 星期日
         </label>
       </div>
     </div>
@@ -216,14 +228,14 @@
       <input type="text" id="batchNote" value="內部保養" placeholder="例：維護、中心例行保養">
     </div>
 
-    <button class="btn btn-red" onclick="handleBatchBlock()" style="margin-top: 8px;">
-      🔒 執行批次扣起
+    <button class="btn btn-red" onclick="handleBatchBlock()" style="margin-top:8px">
+      執行批次扣起
     </button>
   </div>
-  
+
   <!-- 匯出 Excel -->
   <div class="card">
-    <h2>📊 匯出預約記錄</h2>
+    <h2>匯出預約記錄</h2>
     <div class="export-row">
       <div>
         <label for="exportFrom">開始日期</label>
@@ -234,7 +246,7 @@
         <input type="date" id="exportTo">
       </div>
       <div style="padding-bottom:14px">
-        <button class="btn btn-green" onclick="exportExcel()">⬇️ 匯出 Excel</button>
+        <button class="btn btn-green" onclick="exportExcel()">匯出 Excel</button>
       </div>
     </div>
   </div>
@@ -244,14 +256,13 @@
   const WORKER_URL = "https://room17booking.voicebgit.workers.dev/";
   const ADMIN_KEY = "BGIT24148283";
 
-  // 星期幾對應的營業時間 (0=日, 2=二, 3=三, 4=四, 5=五, 6=六)
   const HOURS_BY_DAY = {
-    2: { start: 14, end: 22 }, // 星期二
-    3: { start: 14, end: 22 }, // 星期三
-    4: { start: 14, end: 22 }, // 星期四
-    5: { start: 14, end: 22 }, // 星期五
-    6: { start: 11, end: 22 }, // 星期六
-    0: { start: 11, end: 18 }  // 星期日
+    2: { start: 14, end: 22 },
+    3: { start: 14, end: 22 },
+    4: { start: 14, end: 22 },
+    5: { start: 14, end: 22 },
+    6: { start: 11, end: 22 },
+    0: { start: 11, end: 18 }
   };
 
   let allBookings = [];
@@ -263,6 +274,25 @@
       if (e.key === 'Enter') doLogin();
     });
   });
+
+  // 用途顯示：同時供列表及 Excel 使用。
+  function getPurposeText(value) {
+    const purpose = String(value ?? '').trim();
+    if (purpose === 'party_room' || purpose.toLowerCase() === 'party room') return 'Party Room';
+    if (purpose.toLowerCase() === 'band') return 'Band';
+    if (purpose === 'activity' || purpose === '活動') return '活動';
+    return purpose || '—';
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, m => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    }[m]));
+  }
 
   function doLogin() {
     const key = document.getElementById('adminKey').value.trim();
@@ -296,7 +326,7 @@
       document.getElementById('bookingCount').textContent = '共 ' + allBookings.length + ' 筆';
     } catch (e) {
       document.getElementById('bookingBody').innerHTML =
-        '<tr><td colspan="6" class="loading">載入失敗，請重新整理。</td></tr>';
+        '<tr><td colspan="7" class="loading">載入失敗，請重新整理。</td></tr>';
     }
   }
 
@@ -327,7 +357,7 @@
 
     if (filtered.length === 0) {
       tbody.innerHTML =
-        '<tr><td colspan="6" class="loading">' +
+        '<tr><td colspan="7" class="loading">' +
         ((filterFrom || filterTo) ? '所選日期範圍內沒有預約記錄。' : '暫無未完結的預約記錄。') +
         '</td></tr>';
       return;
@@ -351,26 +381,28 @@
         : '<span class="badge badge-internal">內部</span>';
 
       const dateStr = start.toLocaleDateString('zh-HK', {
-        year:'numeric', month:'2-digit', day:'2-digit', weekday:'short'
+        year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short'
       });
       const timeStr =
-        start.toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit', hour12: false}) +
+        start.toLocaleTimeString('zh-HK', { hour: '2-digit', minute: '2-digit', hour12: false }) +
         ' - ' +
-        end.toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit', hour12: false});
+        end.toLocaleTimeString('zh-HK', { hour: '2-digit', minute: '2-digit', hour12: false });
 
       return (
         '<tr>' +
         '<td>' + statusBadge + '</td>' +
-        '<td>' + dateStr + '</td>' +
-        '<td>' + timeStr + '</td>' +
+        '<td>' + escapeHtml(dateStr) + '</td>' +
+        '<td>' + escapeHtml(timeStr) + '</td>' +
         '<td><strong style="color:#f39c12">' +
-          (b.memberId || b.memberid || '—') +
+          escapeHtml(b.memberId || b.memberid || '—') +
         '</strong></td>' +
+        '<td>' + escapeHtml(getPurposeText(b.purpose)) + '</td>' +
         '<td>' + sourceBadge + '</td>' +
         '<td>' +
           '<button class="btn btn-sm" ' +
           'style="background:rgba(231,76,60,0.2);color:#e74c3c;border:1px solid rgba(231,76,60,0.3)" ' +
-          "onclick=\"deleteBooking('" + b.startTime + "')\">" +
+          'data-start="' + escapeHtml(b.startTime) + '" ' +
+          'onclick="deleteBooking(this.dataset.start)">' +
           '刪除</button>' +
         '</td>' +
         '</tr>'
@@ -408,14 +440,14 @@
   }
 
   function renderInternalCalendar() {
-    const months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+    const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
     document.getElementById('internalCalTitle').textContent =
       internalYear + '年 ' + months[internalMonth];
 
     const grid = document.getElementById('internalCalGrid');
     grid.innerHTML = '';
 
-    ['日','一','二','三','四','五','六'].forEach(d => {
+    ['日', '一', '二', '三', '四', '五', '六'].forEach(d => {
       const h = document.createElement('div');
       h.className = 'cal-header';
       h.textContent = d;
@@ -425,7 +457,7 @@
     const firstDay = new Date(internalYear, internalMonth, 1).getDay();
     const daysInMonth = new Date(internalYear, internalMonth + 1, 0).getDate();
     const today = new Date();
-    today.setHours(0,0,0,0);
+    today.setHours(0, 0, 0, 0);
 
     for (let i = 0; i < firstDay; i++) {
       const e = document.createElement('div');
@@ -462,7 +494,7 @@
     internalSelectedDate = dateStr;
     internalSelectedStart = null;
 
-    const days = ['日','一','二','三','四','五','六'];
+    const days = ['日', '一', '二', '三', '四', '五', '六'];
     const hours = HOURS_BY_DAY[dow];
     const info = document.getElementById('internalDateInfo');
     info.innerHTML =
@@ -482,7 +514,7 @@
     const date = new Date(y, m - 1, d);
     const dow = date.getDay();
     const hours = HOURS_BY_DAY[dow];
-    
+
     if (!hours) return;
 
     const container = document.getElementById('internalSlots');
@@ -507,7 +539,6 @@
       const slotStart = new Date(y, m - 1, d, h, 0, 0);
       const slotEnd = new Date(slotStart.getTime() + duration * 3600000);
       const isPastSlot = slotEnd <= now;
-
       const disabled = taken || isPastSlot;
 
       const btn = document.createElement('button');
@@ -533,7 +564,7 @@
     internalSelectedStart = startH;
     document.getElementById('internalSubmitBtn').style.display = 'block';
     document.getElementById('internalSubmitBtn').textContent =
-      '🔒 確認扣起 ' + internalSelectedDate + ' ' + startH + ':00-' + endH + ':00';
+      '確認扣起 ' + internalSelectedDate + ' ' + startH + ':00-' + endH + ':00';
   }
 
   async function submitInternal() {
@@ -542,12 +573,19 @@
       return;
     }
 
+    const purpose = document.getElementById('internalPurpose').value;
+    if (!['party_room', 'band', 'activity'].includes(purpose)) {
+      showInternalMsg('請選擇使用用途。', 'error');
+      document.getElementById('internalPurpose').focus();
+      return;
+    }
+
     const duration = parseInt(document.getElementById('internalDuration').value);
     const note = document.getElementById('internalNote').value.trim() || '內部';
-    
+
     const startHStr = String(internalSelectedStart).padStart(2, '0');
     const endHStr = String(internalSelectedStart + duration).padStart(2, '0');
-    
+
     const startISO = new Date(`${internalSelectedDate}T${startHStr}:00:00+08:00`).toISOString();
     const endISO = new Date(`${internalSelectedDate}T${endHStr}:00:00+08:00`).toISOString();
 
@@ -565,13 +603,15 @@
           memberId: note,
           startTime: startISO,
           endTime: endISO,
-          source: '內部'
+          source: '內部',
+          purpose
         })
       });
       const result = await res.json();
       if (result.status === 'success') {
         showInternalMsg('時段已成功扣起！', 'success');
         document.getElementById('internalNote').value = '';
+        document.getElementById('internalPurpose').value = '';
         document.getElementById('internalSubmitBtn').style.display = 'none';
         internalSelectedStart = null;
         loadBookings();
@@ -614,9 +654,10 @@
 
     const exportData = filtered.map(b => ({
       '預約日期': new Date(b.startTime).toLocaleDateString('zh-HK'),
-      '開始時間': new Date(b.startTime).toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit'}),
-      '結束時間': new Date(b.endTime).toLocaleTimeString('zh-HK', {hour:'2-digit', minute:'2-digit'}),
-      '會員號碼': b.memberId || b.memberid || '',
+      '開始時間': new Date(b.startTime).toLocaleTimeString('zh-HK', { hour: '2-digit', minute: '2-digit' }),
+      '結束時間': new Date(b.endTime).toLocaleTimeString('zh-HK', { hour: '2-digit', minute: '2-digit' }),
+      '會員號碼／備註': b.memberId || b.memberid || '',
+      '用途': getPurposeText(b.purpose),
       '來源': b.source || ''
     }));
 
@@ -644,7 +685,7 @@
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
     const d = String(date.getDate()).padStart(2, '0');
-    return y + '-' + m + '-' + d;
+    return `${y}-${m}-${d}`;
   }
 
   async function handleBatchBlock() {
@@ -655,7 +696,7 @@
     const note = document.getElementById('batchNote').value.trim() || '內部扣起';
 
     const selectedDays = Array.from(document.querySelectorAll('.batch-day:checked'))
-                              .map(cb => parseInt(cb.value));
+      .map(cb => parseInt(cb.value));
 
     if (!fromStr || !toStr) {
       showBatchMsg('請選擇開始及結束日期。', 'error');
