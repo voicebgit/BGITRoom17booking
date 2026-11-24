@@ -410,24 +410,47 @@
     }).join('');
   }
 
-  async function deleteBooking(startTime) {
-    if (!confirm('確定要刪除這筆預約嗎？')) return;
-    try {
-      const res = await fetch(
-        WORKER_URL + '?startTime=' + encodeURIComponent(startTime),
-        { method: 'DELETE', headers: adminHeaders }
-      );
-      const result = await res.json();
-      if (result.status === 'success') {
-        showAdminMsg('預約已成功刪除。', 'success');
-        loadBookings();
-      } else {
-        showAdminMsg('刪除失敗，請重試。', 'error');
+async function deleteBooking(startTime) {
+  if (!confirm('確定要刪除這筆預約嗎？')) return;
+
+  try {
+    const res = await fetch(
+      WORKER_URL + '?startTime=' + encodeURIComponent(startTime),
+      {
+        method: 'DELETE',
+        headers: adminHeaders
       }
-    } catch (e) {
-      showAdminMsg('網絡錯誤，請稍後再試。', 'error');
+    );
+
+    const result = await res.json();
+
+    if (!res.ok || result.status !== 'success') {
+      showAdminMsg('刪除失敗，請重試。', 'error');
+      return;
     }
+
+    // 後端回報成功後，立即移除目前畫面中的紀錄。
+    allBookings = allBookings.filter(b => b.startTime !== startTime);
+
+    renderTable(allBookings);
+
+    document.getElementById('bookingCount').textContent =
+      '共 ' + allBookings.length + ' 筆';
+
+    // 如正在選擇內部扣起時段，同步更新可用時段。
+    if (internalSelectedDate) {
+      renderInternalSlots();
+    }
+
+    showAdminMsg('預約已成功刪除。', 'success');
+  } catch (e) {
+    console.error('刪除預約失敗：', e);
+    showAdminMsg(
+      '網絡異常，未能確認刪除結果，請重新整理核對。',
+      'error'
+    );
   }
+}
 
   function changeInternalMonth(dir) {
     internalMonth += dir;
@@ -567,64 +590,88 @@
       '確認扣起 ' + internalSelectedDate + ' ' + startH + ':00-' + endH + ':00';
   }
 
-  async function submitInternal() {
-    if (!internalSelectedDate || internalSelectedStart === null) {
-      showInternalMsg('請先選擇日期及時段。', 'error');
-      return;
-    }
-
-    const purpose = document.getElementById('internalPurpose').value;
-    if (!['party_room', 'band', 'activity'].includes(purpose)) {
-      showInternalMsg('請選擇使用用途。', 'error');
-      document.getElementById('internalPurpose').focus();
-      return;
-    }
-
-    const duration = parseInt(document.getElementById('internalDuration').value);
-    const note = document.getElementById('internalNote').value.trim() || '內部';
-
-    const startHStr = String(internalSelectedStart).padStart(2, '0');
-    const endHStr = String(internalSelectedStart + duration).padStart(2, '0');
-
-    const startISO = new Date(`${internalSelectedDate}T${startHStr}:00:00+08:00`).toISOString();
-    const endISO = new Date(`${internalSelectedDate}T${endHStr}:00:00+08:00`).toISOString();
-
-    if (new Date(endISO) <= new Date()) {
-      renderInternalSlots();
-      showInternalMsg('抱歉，你選擇的時段已經完結，請重新選擇。', 'error');
-      return;
-    }
-
-    try {
-      const res = await fetch(WORKER_URL, {
-        method: 'POST',
-        headers: adminHeaders,
-        body: JSON.stringify({
-          memberId: note,
-          startTime: startISO,
-          endTime: endISO,
-          source: '內部',
-          purpose
-        })
-      });
-      const result = await res.json();
-      if (result.status === 'success') {
-        showInternalMsg('時段已成功扣起！', 'success');
-        document.getElementById('internalNote').value = '';
-        document.getElementById('internalPurpose').value = '';
-        document.getElementById('internalSubmitBtn').style.display = 'none';
-        internalSelectedStart = null;
-        loadBookings();
-      } else if (result.message === 'Time slot already booked') {
-        renderInternalSlots();
-        showInternalMsg('抱歉，該時段剛剛已被其他人預約或扣起，請重新選擇。', 'error');
-      } else {
-        showInternalMsg('提交失敗，請重試。', 'error');
-      }
-    } catch (e) {
-      showInternalMsg('網絡錯誤，請稍後再試。', 'error');
-    }
+ async function submitInternal() {
+  if (!internalSelectedDate || internalSelectedStart === null) {
+    showInternalMsg('請先選擇日期及時段。', 'error');
+    return;
   }
+
+  const purpose = document.getElementById('internalPurpose').value;
+
+  if (!['party_room', 'band', 'activity'].includes(purpose)) {
+    showInternalMsg('請選擇使用用途。', 'error');
+    document.getElementById('internalPurpose').focus();
+    return;
+  }
+
+  const duration = parseInt(
+    document.getElementById('internalDuration').value
+  );
+
+  const note =
+    document.getElementById('internalNote').value.trim() || '內部';
+
+  const startHStr =
+    String(internalSelectedStart).padStart(2, '0');
+
+  const endHStr =
+    String(internalSelectedStart + duration).padStart(2, '0');
+
+  const startISO = new Date(
+    `${internalSelectedDate}T${startHStr}:00:00+08:00`
+  ).toISOString();
+
+  const endISO = new Date(
+    `${internalSelectedDate}T${endHStr}:00:00+08:00`
+  ).toISOString();
+
+  if (new Date(endISO) <= new Date()) {
+    renderInternalSlots();
+    showInternalMsg(
+      '抱歉，你選擇的時段已經完結，請重新選擇。',
+      'error'
+    );
+    return;
+  }
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: adminHeaders,
+      body: JSON.stringify({
+        memberId: note,
+        startTime: startISO,
+        endTime: endISO,
+        source: '內部',
+        purpose
+      })
+    });
+
+    const result = await res.json();
+
+    if (res.ok && result.status === 'success') {
+      showInternalMsg('時段已成功扣起！', 'success');
+
+      document.getElementById('internalNote').value = '';
+      document.getElementById('internalPurpose').value = '';
+      document.getElementById('internalSubmitBtn').style.display = 'none';
+
+      internalSelectedStart = null;
+      await loadBookings();
+    } else if (result.message === 'Time slot already booked') {
+      renderInternalSlots();
+      showInternalMsg(
+        '抱歉，該時段剛剛已被其他人預約或扣起，請重新選擇。',
+        'error'
+      );
+    } else {
+      showInternalMsg('提交失敗，請重試。', 'error');
+    }
+  } catch (e) {
+    console.error('內部扣起失敗：', e);
+    showInternalMsg('網絡錯誤，請稍後再試。', 'error');
+  }
+}
 
   function exportExcel() {
     const from = document.getElementById('exportFrom').value;
