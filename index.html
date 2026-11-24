@@ -287,6 +287,17 @@
       <option value="6">6 人</option>
     </select>
 
+    <div id="purposeLabel"
+     style="margin-bottom:6px; font-size:0.9rem; font-weight:600; color:#555;">
+  使用用途 *
+</div>
+
+<select id="purpose" required style="margin-bottom:16px;">
+  <option value="">請選擇用途</option>
+  <option value="party_room">Party Room</option>
+  <option value="band">Band</option>
+</select>
+    
     <div class="terms-group">
       <input type="checkbox" id="agreeTerms" required>
       <label for="agreeTerms">
@@ -355,9 +366,15 @@ title: "BG Party Room 系統(只限12-24歲中心會員且已注冊'TO_MO by 21C
       memberLabel: "會員號碼 *", partySizeLabel: "預約人數 *",
       submitBtn: "確認預約", submitting: "處理中...", overlayBadge: "✅ 預約成功！",
       backBtn: "👍 明白及同意 · I Agree & Return", dateLabel: "日期：", timeLabel: "時間：", 
-      termsText: "I have read and agree to the", termsLink: "《房間使用規則及免責聲明》",
+      termsText: "我已閱讀並同意", termsLink: "《房間使用規則及免責聲明》",
       modalTitle: "📜 房間使用規則及免責聲明",
       modalBtn: "我已明白並關閉",
+      // T.zh
+purposeLabel: "使用用途 *",
+purposePlaceholder: "請選擇用途",
+purposePartyRoom: "Party Room",
+purposeBand: "Band",
+errPurpose: "請選擇使用用途",
       // 👉 在此補上中文 modalBody 內容
       modalBody: `
 <h4>【使用規則】</h4>
@@ -394,6 +411,12 @@ title: "BG Party Room System (Only for Center members aged 12–24 with a regist
       termsText: "I have read and agree to the", termsLink: "《Room Rules & Disclaimer》",
       modalTitle: "📜 Room Rules & Disclaimer",
       modalBtn: "I Understand & Close",
+      // T.en
+purposeLabel: "Purpose *",
+purposePlaceholder: "Select a purpose",
+purposePartyRoom: "Party Room",
+purposeBand: "Band",
+errPurpose: "Please select a purpose",
       // 👉 在此補上英文 modalBody 內容（可依需求調整英文翻譯）
       modalBody: `
 <h4>【Room Rules】</h4>
@@ -574,92 +597,148 @@ function checkMemberLimit(memberId) {
   return { count: userBookings.length, totalHours };
 }
 
-  async function submitBooking() {
-    const t = T[lang];
-    const memberId = document.getElementById('memberId').value.trim();
-    const agreeTerms = document.getElementById('agreeTerms');
+async function submitBooking() {
+  const t = T[lang];
+  const memberId = document.getElementById('memberId').value.trim();
+  const agreeTerms = document.getElementById('agreeTerms');
+  const purpose = document.getElementById('purpose').value;
 
-    if (!agreeTerms || !agreeTerms.checked) {
-      showMsg(lang === 'zh' ? '請先閱讀並勾選同意《房間使用規則及免責聲明》。' : 'Please agree to terms before booking.', 'error');
-      return;
-    }
-
-    if (!memberId) { showMsg(t.errMember, 'error'); return; }
-    if (!selectedDate || selectedStart === null) { showMsg(t.errSelect, 'error'); return; }
-
-    const duration = parseInt(document.getElementById('duration').value);
-    const { count, totalHours } = checkMemberLimit(memberId);
-    if (count >= MAX_BOOKINGS || totalHours + duration > MAX_HOURS) {
-      showMsg(t.errLimit, 'error');
-      return;
-    }
-
-    const startStr = String(selectedStart).padStart(2, '0');
-    const endStr = String(selectedStart + duration).padStart(2, '0');
-    const startTimeISO = `${selectedDate}T${startStr}:00:00+08:00`;
-    const endTimeISO = `${selectedDate}T${endStr}:00:00+08:00`;
-
-    if (new Date(endTimeISO) <= new Date()) {
-      showMsg(lang === 'zh' ? '該時段已過期，請重新選擇。' : 'Slot expired, please reselect.', 'error');
-      renderSlots();
-      return;
-    }
-      
-    const partySize = parseInt(document.getElementById('partySize').value) || 1;
-
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.textContent = t.submitting;
-
-    try {
-      const res = await fetch(WORKER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          memberId,
-          startTime: new Date(startTimeISO).toISOString(),
-          endTime: new Date(endTimeISO).toISOString(),
-          source: '公眾',
-          partySize: partySize
-        })
-      });
-
-      const result = await res.json();
-
-      if (result.status === 'success') {
-        document.getElementById('overlayBadge').textContent = t.overlayBadge;
-        document.getElementById('overlayBookingInfo').innerHTML =
-          t.dateLabel + '<strong>' + escapeHtml(selectedDate) + '</strong><br>' +
-          t.timeLabel + '<strong>' + selectedStart + ':00 - ' + (selectedStart + duration) + ':00</strong><br>' +
-          (lang === 'zh' ? '會員號碼：' : 'Member ID: ') + '<strong>' + escapeHtml(memberId) + '</strong><br>' +
-          (lang === 'zh' ? '預約人數：' : 'Party Size: ') + '<strong>' + partySize + ' 人</strong>';
-
-        const overlay = document.getElementById('rulesOverlay');
-        overlay.classList.add('active');
-        overlay.scrollTop = 0;
-        await loadBookings();
-      } else {
-        showMsg(result.message === 'Time slot already booked' ? (lang === 'zh' ? '該時段已被預約' : 'Slot already booked') : t.errFail, 'error');
-      }
-    } catch (e) {
-      showMsg(t.errNet, 'error');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = t.submitBtn;
-    }
+  if (!agreeTerms.checked) {
+    showMsg(
+      lang === 'zh'
+        ? '請先閱讀並勾選同意《房間使用規則及免責聲明》。'
+        : 'Please agree to the terms before booking.',
+      'error'
+    );
+    return;
   }
 
-  function closeRules() {
-    document.getElementById('rulesOverlay').classList.remove('active');
-    selectedDate = null;
-    selectedStart = null;
-    document.getElementById('slotCard').style.display = 'none';
-    document.getElementById('formCard').style.display = 'none';
-    document.getElementById('agreeTerms').checked = false;
-    document.getElementById('memberId').value = '';
-    renderCalendar();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (!memberId) {
+    showMsg(t.errMember, 'error');
+    return;
   }
+
+  if (!purpose) {
+    showMsg(t.errPurpose, 'error');
+    document.getElementById('purpose').focus();
+    return;
+  }
+
+  if (!selectedDate || selectedStart === null) {
+    showMsg(t.errSelect, 'error');
+    return;
+  }
+
+  const duration = Number(document.getElementById('duration').value);
+  const { count, totalHours } = checkMemberLimit(memberId);
+
+  if (count >= MAX_BOOKINGS || totalHours + duration > MAX_HOURS) {
+    showMsg(t.errLimit, 'error');
+    return;
+  }
+
+  const startStr = String(selectedStart).padStart(2, '0');
+  const endStr = String(selectedStart + duration).padStart(2, '0');
+  const startTimeISO =
+    `${selectedDate}T${startStr}:00:00+08:00`;
+  const endTimeISO =
+    `${selectedDate}T${endStr}:00:00+08:00`;
+
+  // 已開始或已過期的時段不能預約
+  if (new Date(startTimeISO).getTime() <= Date.now()) {
+    showMsg(
+      lang === 'zh'
+        ? '該時段已開始或已過期，請重新選擇。'
+        : 'This slot has already started or expired. Please select another slot.',
+      'error'
+    );
+    renderSlots();
+    return;
+  }
+
+  const partySize =
+    Number(document.getElementById('partySize').value) || 1;
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = t.submitting;
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        memberId,
+        startTime: new Date(startTimeISO).toISOString(),
+        endTime: new Date(endTimeISO).toISOString(),
+        source: '公眾',
+        partySize,
+        purpose
+      })
+    });
+
+    const result = await res.json();
+
+    if (!res.ok || result.status !== 'success') {
+      showMsg(
+        result.message === 'Time slot already booked'
+          ? (lang === 'zh' ? '該時段已被預約' : 'Slot already booked')
+          : t.errFail,
+        'error'
+      );
+      return;
+    }
+
+    const purposeText =
+      purpose === 'band' ? t.purposeBand : t.purposePartyRoom;
+
+    document.getElementById('overlayBadge').textContent =
+      t.overlayBadge;
+
+    document.getElementById('overlayBookingInfo').innerHTML =
+      t.dateLabel + '<strong>' + escapeHtml(selectedDate) + '</strong><br>' +
+      t.timeLabel + '<strong>' +
+        selectedStart + ':00 - ' + (selectedStart + duration) + ':00' +
+      '</strong><br>' +
+      (lang === 'zh' ? '會員號碼：' : 'Member ID: ') +
+      '<strong>' + escapeHtml(memberId) + '</strong><br>' +
+      (lang === 'zh' ? '預約人數：' : 'Party Size: ') +
+      '<strong>' + partySize + '</strong><br>' +
+      (lang === 'zh' ? '使用用途：' : 'Purpose: ') +
+      '<strong>' + escapeHtml(purposeText) + '</strong>';
+
+    const overlay = document.getElementById('rulesOverlay');
+    overlay.classList.add('active');
+    overlay.scrollTop = 0;
+
+    await loadBookings();
+  } catch (e) {
+    console.error('提交預約失敗：', e);
+    showMsg(t.errNet, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = t.submitBtn;
+  }
+}
+
+function closeRules() {
+  document.getElementById('rulesOverlay').classList.remove('active');
+  selectedDate = null;
+  selectedStart = null;
+
+  document.getElementById('slotCard').style.display = 'none';
+  document.getElementById('formCard').style.display = 'none';
+
+  document.getElementById('agreeTerms').checked = false;
+  document.getElementById('memberId').value = '';
+  document.getElementById('purpose').value = '';
+
+  document.getElementById('msg').textContent = '';
+  document.getElementById('msg').className = 'msg';
+
+  renderCalendar();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
   function showMsg(text, type) {
     const msg = document.getElementById('msg');
@@ -711,6 +790,11 @@ function toggleLang() {
     document.getElementById('m-title').textContent = t.modalTitle;
     document.getElementById('m-body').innerHTML = t.modalBody;
     document.getElementById('m-btn').textContent = t.modalBtn;
+
+  document.getElementById('purposeLabel').textContent = t.purposeLabel;
+document.querySelector('#purpose option[value=""]').textContent = t.purposePlaceholder;
+document.querySelector('#purpose option[value="party_room"]').textContent = t.purposePartyRoom;
+document.querySelector('#purpose option[value="band"]').textContent = t.purposeBand;
 
     document.getElementById('rulesFooterNote').innerHTML = lang === 'zh' 
       ? '* 按下「明白及同意」即代表已閱讀、明白並同意遵守所有房間使用規則與免責聲明。<br><em>By clicking agree, you acknowledge and accept all room rules and terms above.</em>'
